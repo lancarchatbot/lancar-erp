@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from database import engine, Base, SessionLocal
 from routers import bahan, penerimaan, produksi, penjualan, keuangan, dashboard
 from routers import auth as auth_router, users as users_router
+from routers import keluar as keluar_router, produk as produk_router
 from auth import seed_owner
 import os
 
@@ -33,6 +34,8 @@ app.include_router(penerimaan.router)
 app.include_router(produksi.router)
 app.include_router(penjualan.router)
 app.include_router(keuangan.router)
+app.include_router(keluar_router.router)
+app.include_router(produk_router.router)
 
 os.makedirs("/app/uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="/app/uploads"), name="uploads")

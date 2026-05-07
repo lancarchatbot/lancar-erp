@@ -173,6 +173,10 @@
 
   /* ── TABLE ── */
   .table-wrap { overflow-x: auto; }
+  .hapus-bar { display:none; align-items:center; gap:10px; padding:8px 20px; background:#fff5f5; border-bottom:1px solid #fecaca; font-size:13px; }
+  .hapus-bar.show { display:flex; }
+  .hapus-bar span { color:var(--red); font-weight:700; }
+  th input[type=checkbox], .row-chk { width:15px; height:15px; cursor:pointer; accent-color:var(--green-mid); }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   thead th { background: var(--gray-50); padding: 10px 14px; text-align: left; font-weight: 600; color: var(--gray-600); border-bottom: 1px solid var(--gray-200); white-space: nowrap; font-size: 12px; text-transform: uppercase; letter-spacing: .3px; }
   tbody td { padding: 11px 14px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
@@ -910,89 +914,24 @@
             <select><option>Semua Status</option><option>Aman</option><option>Kritis</option><option>Minus</option></select>
           </div>
         </div>
+        <div class="hapus-bar" id="bahan-hapus-bar">
+          <span id="bahan-hapus-count">0</span> item dipilih
+          <button class="btn btn-danger" style="font-size:12px;padding:4px 12px" onclick="hapusPilihan('bahan','/api/bahan',loadBahan)">🗑 Hapus yang dipilih</button>
+          <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px" onclick="clearPilihan('bahan')">Batal</button>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Kode</th><th>Nama Bahan</th><th>Nama Latin</th><th>Satuan</th>
-                <th style="text-align:right">Stok Saat Ini</th><th style="text-align:right">Stok Min</th>
-                <th style="text-align:right">Harga/Satuan</th><th style="text-align:right">Nilai Stok</th>
-                <th>Supplier</th><th>Status</th><th>Aksi</th>
+                <th style="width:32px"><input type="checkbox" id="chk-all-bahan" onchange="toggleAll('bahan')"></th>
+                <th>Kode</th><th>Nama Bahan</th><th>Satuan</th>
+                <th style="text-align:right">Stok</th><th style="text-align:right">Stok Min</th>
+                <th style="text-align:right">Harga/Sat</th><th style="text-align:right">Nilai Stok</th>
+                <th>Status</th><th>Hapus</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="td-mono">JHE</td><td><strong>Jahe</strong><div style="font-size:11px;color:var(--gray-400)">Rimpang kering siap potong</div></td>
-                <td style="font-style:italic;font-size:12px;color:var(--gray-400)">Zingiber officinale</td>
-                <td>gram</td><td style="text-align:right;font-weight:700">42.000</td><td style="text-align:right">5.000</td>
-                <td style="text-align:right">Rp 50</td><td style="text-align:right;font-weight:600">Rp 2.100.000</td>
-                <td>Supplier A</td><td><span class="badge badge-green">✓ Aman</span></td>
-                <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Edit</button></td>
-              </tr>
-              <tr>
-                <td class="td-mono">KYT</td><td><strong>Kunyit</strong><div style="font-size:11px;color:var(--gray-400)">Rimpang kering siap potong</div></td>
-                <td style="font-style:italic;font-size:12px;color:var(--gray-400)">Curcuma longa</td>
-                <td>gram</td><td style="text-align:right;font-weight:700">27.000</td><td style="text-align:right">4.000</td>
-                <td style="text-align:right">Rp 60</td><td style="text-align:right;font-weight:600">Rp 1.620.000</td>
-                <td>Supplier A</td><td><span class="badge badge-green">✓ Aman</span></td>
-                <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Edit</button></td>
-              </tr>
-              <tr>
-                <td class="td-mono">KMN</td><td><strong>Kayu Manis</strong><div style="font-size:11px;color:var(--gray-400)">Kulit kayu</div></td>
-                <td style="font-style:italic;font-size:12px;color:var(--gray-400)">Cinnamomum verum</td>
-                <td>gram</td><td style="text-align:right;font-weight:700">13.500</td><td style="text-align:right">3.000</td>
-                <td style="text-align:right">Rp 100</td><td style="text-align:right;font-weight:600">Rp 1.350.000</td>
-                <td>Supplier B</td><td><span class="badge badge-green">✓ Aman</span></td>
-                <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Edit</button></td>
-              </tr>
-              <tr>
-                <td class="td-mono">KTM</td><td><strong>Ketumbar</strong><div style="font-size:11px;color:var(--gray-400)">Biji utuh</div></td>
-                <td style="font-style:italic;font-size:12px;color:var(--gray-400)">Coriandrum sativum</td>
-                <td>gram</td><td style="text-align:right;font-weight:700">71.500</td><td style="text-align:right">2.000</td>
-                <td style="text-align:right">Rp 80</td><td style="text-align:right;font-weight:600">Rp 5.720.000</td>
-                <td>Supplier C</td><td><span class="badge badge-green">✓ Aman</span></td>
-                <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Edit</button></td>
-              </tr>
-              <tr>
-                <td class="td-mono">KLD</td><td><strong>Kulit Delima</strong><div style="font-size:11px;color:var(--gray-400)">Perlu dipotong</div></td>
-                <td style="font-style:italic;font-size:12px;color:var(--gray-400)">Punica granatum</td>
-                <td>gram</td><td style="text-align:right;font-weight:700">32.000</td><td style="text-align:right">1.000</td>
-                <td style="text-align:right">Rp 150</td><td style="text-align:right;font-weight:600">Rp 4.800.000</td>
-                <td>Supplier B</td><td><span class="badge badge-green">✓ Aman</span></td>
-                <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Edit</button></td>
-              </tr>
-              <tr style="background:#fff5f5">
-                <td class="td-mono">KTG</td><td><strong>Kantung Teh</strong><div style="font-size:11px;color:var(--gray-400)">Filter paper food grade</div></td>
-                <td style="font-size:12px;color:var(--gray-400)">—</td>
-                <td>pcs</td><td style="text-align:right;font-weight:700;color:var(--red)">−30.000</td><td style="text-align:right">5.000</td>
-                <td style="text-align:right">Rp 50</td><td style="text-align:right;font-weight:600;color:var(--red)">−Rp 1.500.000</td>
-                <td>Supplier D</td><td><span class="badge badge-red">⚠ MINUS</span></td>
-                <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Edit</button></td>
-              </tr>
-              <tr style="background:#fff5f5">
-                <td class="td-mono">BOX-30</td><td><strong>Box Kemasan 30 sachet</strong><div style="font-size:11px;color:var(--gray-400)">Karton + sticker label</div></td>
-                <td style="font-size:12px;color:var(--gray-400)">—</td>
-                <td>pcs</td><td style="text-align:right;font-weight:700;color:var(--red)">−1.000</td><td style="text-align:right">200</td>
-                <td style="text-align:right">Rp 2.000</td><td style="text-align:right;font-weight:600;color:var(--red)">−Rp 2.000.000</td>
-                <td>Supplier D</td><td><span class="badge badge-red">⚠ MINUS</span></td>
-                <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Edit</button></td>
-              </tr>
-              <tr style="background:#fffbf0">
-                <td class="td-mono">LBL</td><td><strong>Label / Stiker</strong><div style="font-size:11px;color:var(--gray-400)">Nutrition label, batch info</div></td>
-                <td style="font-size:12px;color:var(--gray-400)">—</td>
-                <td>pcs</td><td style="text-align:right;font-weight:700;color:var(--gold)">0</td><td style="text-align:right">500</td>
-                <td style="text-align:right">Rp 250</td><td style="text-align:right;font-weight:600">Rp 0</td>
-                <td>Supplier D</td><td><span class="badge badge-gold">⚡ PESAN</span></td>
-                <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Edit</button></td>
-              </tr>
-              <tr style="background:#fffbf0">
-                <td class="td-mono">SP-50</td><td><strong>Standing Pouch 50g</strong><div style="font-size:11px;color:var(--gray-400)">Alu-foil food grade</div></td>
-                <td style="font-size:12px;color:var(--gray-400)">—</td>
-                <td>pcs</td><td style="text-align:right;font-weight:700;color:var(--gold)">0</td><td style="text-align:right">300</td>
-                <td style="text-align:right">Rp 1.500</td><td style="text-align:right;font-weight:600">Rp 0</td>
-                <td>Supplier D</td><td><span class="badge badge-gold">⚡ PESAN</span></td>
-                <td><button class="btn btn-secondary" style="padding:4px 10px;font-size:12px">Edit</button></td>
-              </tr>
+            <tbody id="bahan-tbody">
+              <tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -1157,133 +1096,27 @@
           </div>
         </div>
 
+        <div class="hapus-bar" id="penerimaan-hapus-bar">
+          <span id="penerimaan-hapus-count">0</span> item dipilih
+          <button class="btn btn-danger" style="font-size:12px;padding:4px 12px" onclick="hapusPilihan('penerimaan','/api/penerimaan',loadPenerimaan)">🗑 Hapus yang dipilih</button>
+          <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px" onclick="clearPilihan('penerimaan')">Batal</button>
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
+                <th style="width:32px"><input type="checkbox" id="chk-all-penerimaan" onchange="toggleAll('penerimaan')"></th>
                 <th>Tanggal</th><th>Nama Bahan</th><th>Jumlah</th><th>Pemasok</th>
-                <th>No. Izin Edar</th><th>Kadaluarsa</th><th>QC</th><th>Bukti Beli</th><th>Kode</th>
+                <th>No. Izin Edar</th><th>Kadaluarsa</th><th>QC</th><th>Hapus</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>02 Feb 2026</td><td><strong>Jahe Kering</strong></td><td class="td-mono">10 KG</td>
-                <td style="max-width:140px;font-size:12px">Toko Grosir Rempah Bandung</td>
-                <td class="td-mono" style="font-size:11px">P-IRT 5133515011836</td>
-                <td>02 Feb 2027</td>
-                <td>
-                  <button class="btn" style="padding:4px 10px;font-size:11px;background:#d1fae5;color:#065f46;gap:3px"
-                    onclick="openPenerimaanQC({id:'RCV-001',bahan:'Jahe Kering',kode:'JHE',jumlah:'10 KG',pemasok:'Toko Grosir Rempah Bandung',tanggal:'02 Feb 2026',exp:'02 Feb 2027',status:'MS',koreksi:''})">
-                    🔬 MS
-                  </button>
-                </td>
-                <td>
-                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;gap:3px"
-                    onclick="openBuktiModal('RCV-001','Jahe Kering','02 Feb 2026',true)">
-                    📎 Lihat
-                  </button>
-                </td>
-                <td class="td-mono">JHE</td>
-              </tr>
-              <tr>
-                <td>02 Feb 2026</td><td><strong>Kunyit Kering</strong></td><td class="td-mono">10 KG</td>
-                <td style="max-width:140px;font-size:12px">Toko Grosir Rempah Bandung</td>
-                <td class="td-mono" style="font-size:11px">P-IRT 5133515011836</td>
-                <td>02 Feb 2027</td>
-                <td>
-                  <button class="btn" style="padding:4px 10px;font-size:11px;background:#d1fae5;color:#065f46;gap:3px"
-                    onclick="openPenerimaanQC({id:'RCV-002',bahan:'Kunyit Kering',kode:'KYT',jumlah:'10 KG',pemasok:'Toko Grosir Rempah Bandung',tanggal:'02 Feb 2026',exp:'02 Feb 2027',status:'MS',koreksi:''})">
-                    🔬 MS
-                  </button>
-                </td>
-                <td>
-                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;gap:3px"
-                    onclick="openBuktiModal('RCV-002','Kunyit Kering','02 Feb 2026',false)">
-                    📎 Upload
-                  </button>
-                </td>
-                <td class="td-mono">KYT</td>
-              </tr>
-              <tr>
-                <td>03 Feb 2026</td><td><strong>Ketumbar</strong></td><td class="td-mono">30 KG</td>
-                <td style="max-width:140px;font-size:12px">Toko Grosir Rempah Bandung</td>
-                <td class="td-mono" style="font-size:11px">P-IRT 5133515011836</td>
-                <td>03 Feb 2027</td>
-                <td>
-                  <button class="btn" style="padding:4px 10px;font-size:11px;background:#d1fae5;color:#065f46;gap:3px"
-                    onclick="openPenerimaanQC({id:'RCV-003',bahan:'Ketumbar',kode:'KTM',jumlah:'30 KG',pemasok:'Toko Grosir Rempah Bandung',tanggal:'03 Feb 2026',exp:'03 Feb 2027',status:'MS',koreksi:''})">
-                    🔬 MS
-                  </button>
-                </td>
-                <td>
-                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;gap:3px"
-                    onclick="openBuktiModal('RCV-003','Ketumbar','03 Feb 2026',false)">
-                    📎 Upload
-                  </button>
-                </td>
-                <td class="td-mono">KTM</td>
-              </tr>
-              <tr>
-                <td>03 Feb 2026</td><td><strong>Kulit Delima Kering</strong></td><td class="td-mono">20 KG</td>
-                <td style="max-width:140px;font-size:12px">Masio Store, Kab. Sidoarjo</td>
-                <td class="td-mono" style="font-size:11px">—</td>
-                <td>03 Feb 2027</td>
-                <td>
-                  <button class="btn" style="padding:4px 10px;font-size:11px;background:#fee2e2;color:#991b1b;gap:3px"
-                    onclick="openPenerimaanQC({id:'RCV-004',bahan:'Kulit Delima Kering',kode:'KLD',jumlah:'20 KG',pemasok:'Masio Store, Kab. Sidoarjo',tanggal:'03 Feb 2026',exp:'03 Feb 2027',status:'TMS',koreksi:'Kemasan rusak, sudah dipisahkan'})">
-                    🔬 TMS
-                  </button>
-                </td>
-                <td>
-                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;gap:3px"
-                    onclick="openBuktiModal('RCV-004','Kulit Delima Kering','03 Feb 2026',true)">
-                    📎 Lihat
-                  </button>
-                </td>
-                <td class="td-mono">KLD</td>
-              </tr>
-              <tr>
-                <td>04 Feb 2026</td><td><strong>Kayu Manis</strong></td><td class="td-mono">18 KG</td>
-                <td style="max-width:140px;font-size:12px">Toko Grosir Rempah Bandung</td>
-                <td class="td-mono" style="font-size:11px">P-IRT 5133515011836</td>
-                <td>04 Feb 2027</td>
-                <td>
-                  <button class="btn" style="padding:4px 10px;font-size:11px;background:#d1fae5;color:#065f46;gap:3px"
-                    onclick="openPenerimaanQC({id:'RCV-005',bahan:'Kayu Manis',kode:'KMN',jumlah:'18 KG',pemasok:'Toko Grosir Rempah Bandung',tanggal:'04 Feb 2026',exp:'04 Feb 2027',status:'MS',koreksi:''})">
-                    🔬 MS
-                  </button>
-                </td>
-                <td>
-                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;gap:3px"
-                    onclick="openBuktiModal('RCV-005','Kayu Manis','04 Feb 2026',false)">
-                    📎 Upload
-                  </button>
-                </td>
-                <td class="td-mono">KMN</td>
-              </tr>
-              <tr>
-                <td>06 Feb 2026</td><td><strong>Jahe Kering</strong></td><td class="td-mono">50 KG</td>
-                <td style="max-width:140px;font-size:12px">CV. Nusantara Hijau Herbals</td>
-                <td class="td-mono" style="font-size:11px">BPOM MD 200723...</td>
-                <td>06 Feb 2027</td>
-                <td>
-                  <button class="btn" style="padding:4px 10px;font-size:11px;background:#d1fae5;color:#065f46;gap:3px"
-                    onclick="openPenerimaanQC({id:'RCV-006',bahan:'Jahe Kering',kode:'JHE',jumlah:'50 KG',pemasok:'CV. Nusantara Hijau Herbals',tanggal:'06 Feb 2026',exp:'06 Feb 2027',status:'MS',koreksi:''})">
-                    🔬 MS
-                  </button>
-                </td>
-                <td>
-                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px;gap:3px"
-                    onclick="openBuktiModal('RCV-006','Jahe Kering','06 Feb 2026',true)">
-                    📎 Lihat
-                  </button>
-                </td>
-                <td class="td-mono">JHE</td>
-              </tr>
+            <tbody id="penerimaan-tbody">
+              <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
       </div>
+
 
       <!-- MODAL QC PENERIMAAN -->
       <div class="modal-backdrop" id="penerimaan-qc-modal">
@@ -1455,16 +1288,18 @@
           </div>
         </div>
         <div class="table-wrap">
+        <div class="hapus-bar" id="keluar-hapus-bar">
+            <span id="keluar-hapus-count">0</span> item dipilih
+            <button class="btn btn-danger" style="font-size:12px;padding:4px 12px" onclick="hapusPilihan('keluar','/api/keluar',loadKeluar)">🗑 Hapus yang dipilih</button>
+            <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px" onclick="clearPilihan('keluar')">Batal</button>
+          </div>
           <table>
-            <thead><tr><th>No</th><th>Tanggal</th><th>Batch Produksi</th><th>Kode</th><th>Nama Bahan</th><th style="text-align:right">Jumlah</th><th>Satuan</th><th>Operator</th><th>Catatan</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>25 Apr 2026</td><td class="td-mono">BATCH-LCR-001</td><td class="td-mono">JHE</td><td>Jahe</td><td style="text-align:right;font-weight:700">18.000</td><td>gram</td><td>Tim Produksi 1</td><td>Untuk produksi 1000 box LCR-30</td></tr>
-              <tr><td>2</td><td>25 Apr 2026</td><td class="td-mono">BATCH-LCR-001</td><td class="td-mono">KYT</td><td>Kunyit</td><td style="text-align:right;font-weight:700">18.000</td><td>gram</td><td>Tim Produksi 1</td><td>—</td></tr>
-              <tr><td>3</td><td>25 Apr 2026</td><td class="td-mono">BATCH-LCR-001</td><td class="td-mono">KMN</td><td>Kayu Manis</td><td style="text-align:right;font-weight:700">22.500</td><td>gram</td><td>Tim Produksi 1</td><td>Sudah dipotong</td></tr>
-              <tr><td>4</td><td>25 Apr 2026</td><td class="td-mono">BATCH-LCR-001</td><td class="td-mono">KTM</td><td>Ketumbar</td><td style="text-align:right;font-weight:700">13.500</td><td>gram</td><td>Tim Produksi 1</td><td>—</td></tr>
-              <tr><td>5</td><td>25 Apr 2026</td><td class="td-mono">BATCH-LCR-001</td><td class="td-mono">KLD</td><td>Kulit Delima</td><td style="text-align:right;font-weight:700">18.000</td><td>gram</td><td>Tim Produksi 1</td><td>Sudah dipotong</td></tr>
-              <tr><td>6</td><td>25 Apr 2026</td><td class="td-mono">BATCH-LCR-001</td><td class="td-mono">KTG</td><td>Kantung Teh</td><td style="text-align:right;font-weight:700">30.000</td><td>pcs</td><td>Tim Packing</td><td>30 kantung × 1000 box</td></tr>
-              <tr><td>7</td><td>25 Apr 2026</td><td class="td-mono">BATCH-LCR-001</td><td class="td-mono">BOX-30</td><td>Box Kemasan 30 sachet</td><td style="text-align:right;font-weight:700">1.000</td><td>pcs</td><td>Tim Packing</td><td>—</td></tr>
+            <thead><tr>
+              <th style="width:32px"><input type="checkbox" id="chk-all-keluar" onchange="toggleAll('keluar')"></th>
+              <th>Tanggal</th><th>Batch Produksi</th><th>Kode</th><th>Nama Bahan</th><th style="text-align:right">Jumlah</th><th>Satuan</th><th>Catatan</th><th>Hapus</th>
+            </tr></thead>
+            <tbody id="keluar-tbody">
+              <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -1655,66 +1490,18 @@
           </div>
         </div>
         <div class="table-wrap">
+        <div class="hapus-bar" id="produksi-hapus-bar">
+            <span id="produksi-hapus-count">0</span> item dipilih
+            <button class="btn btn-danger" style="font-size:12px;padding:4px 12px" onclick="hapusPilihan('produksi','/api/produksi',loadProduksi)">🗑 Hapus yang dipilih</button>
+            <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px" onclick="clearPilihan('produksi')">Batal</button>
+          </div>
           <table>
-            <thead><tr><th>Tanggal</th><th>Produk</th><th style="text-align:right">Jumlah</th><th>Kode Produksi</th><th>Kadaluarsa</th><th>QC</th><th>Tindakan</th><th>Pembayaran</th><th>Aksi</th></tr></thead>
-            <tbody>
-              <tr>
-                <td>15 Feb 2026</td><td>Lancar Teh Herbal Box 20</td>
-                <td style="text-align:right;font-weight:700">500 BOX</td>
-                <td class="td-mono">LCR-20/26020001</td>
-                <td>15 Feb 2028</td>
-                <td><span class="badge badge-green">✓ MS</span></td>
-                <td style="color:var(--gray-400);font-size:12px">—</td>
-                <td><span class="badge badge-green">✓ Lunas</span></td>
-                <td style="display:flex;gap:6px;flex-wrap:wrap">
-                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px"
-                    onclick="openQCModal({kode:'LCR-20/26020001',produk:'Lancar Teh Herbal Box 20',jumlah:'500 BOX',tanggal:'15 Feb 2026',exp:'15 Feb 2028',status:'MS',koreksi:'—',sku:'LCR-20'})">
-                    ✏️ QC
-                  </button>
-                  <button class="btn" style="padding:4px 10px;font-size:11px;background:#d1fae5;color:#065f46"
-                    onclick="openBayarModal({kode:'LCR-20/26020001',produk:'Lancar Teh Herbal Box 20',jumlah:'500 BOX',tanggal:'15 Feb 2026',status:'lunas'})">
-                    💳 Bayar
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>20 Feb 2026</td><td>Lancar Teh Herbal Box 10</td>
-                <td style="text-align:right;font-weight:700">1.000 BOX</td>
-                <td class="td-mono">LCR-10/26020002</td>
-                <td>20 Feb 2028</td>
-                <td><span class="badge badge-green">✓ MS</span></td>
-                <td style="color:var(--gray-400);font-size:12px">—</td>
-                <td><span class="badge badge-gold">⏳ Belum</span></td>
-                <td style="display:flex;gap:6px;flex-wrap:wrap">
-                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px"
-                    onclick="openQCModal({kode:'LCR-10/26020002',produk:'Lancar Teh Herbal Box 10',jumlah:'1.000 BOX',tanggal:'20 Feb 2026',exp:'20 Feb 2028',status:'MS',koreksi:'—',sku:'LCR-10'})">
-                    ✏️ QC
-                  </button>
-                  <button class="btn" style="padding:4px 10px;font-size:11px;background:var(--gold-light);color:var(--gold)"
-                    onclick="openBayarModal({kode:'LCR-10/26020002',produk:'Lancar Teh Herbal Box 10',jumlah:'1.000 BOX',tanggal:'20 Feb 2026',status:'belum'})">
-                    💳 Bayar
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td>25 Feb 2026</td><td>Lancar Teh Herbal Box 20</td>
-                <td style="text-align:right;font-weight:700">300 BOX</td>
-                <td class="td-mono">LCR-20/26020003</td>
-                <td>25 Feb 2028</td>
-                <td><span class="badge badge-green">✓ MS</span></td>
-                <td style="color:var(--gray-400);font-size:12px">—</td>
-                <td><span class="badge badge-gold">⏳ Belum</span></td>
-                <td style="display:flex;gap:6px;flex-wrap:wrap">
-                  <button class="btn btn-secondary" style="padding:4px 10px;font-size:11px"
-                    onclick="openQCModal({kode:'LCR-20/26020003',produk:'Lancar Teh Herbal Box 20',jumlah:'300 BOX',tanggal:'25 Feb 2026',exp:'25 Feb 2028',status:'MS',koreksi:'—',sku:'LCR-20'})">
-                    ✏️ QC
-                  </button>
-                  <button class="btn" style="padding:4px 10px;font-size:11px;background:var(--gold-light);color:var(--gold)"
-                    onclick="openBayarModal({kode:'LCR-20/26020003',produk:'Lancar Teh Herbal Box 20',jumlah:'300 BOX',tanggal:'25 Feb 2026',status:'belum'})">
-                    💳 Bayar
-                  </button>
-                </td>
-              </tr>
+            <thead><tr>
+              <th style="width:32px"><input type="checkbox" id="chk-all-produksi" onchange="toggleAll('produksi')"></th>
+              <th>Tanggal</th><th>Produk</th><th style="text-align:right">Jumlah</th><th>Kode Produksi</th><th>Kadaluarsa</th><th>QC</th><th>Pembayaran</th><th>Hapus</th>
+            </tr></thead>
+            <tbody id="produksi-tbody">
+              <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -2250,76 +2037,21 @@
           </div>
         </div>
         <div class="table-wrap">
+        <div class="hapus-bar" id="jual-hapus-bar">
+            <span id="jual-hapus-count">0</span> item dipilih
+            <button class="btn btn-danger" style="font-size:12px;padding:4px 12px" onclick="hapusPilihan('jual','/api/penjualan',loadPenjualan)">🗑 Hapus yang dipilih</button>
+            <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px" onclick="clearPilihan('jual')">Batal</button>
+          </div>
           <table>
             <thead>
               <tr>
-                <th>Tanggal</th>
-                <th>Channel</th>
-                <th>Produk</th>
-                <th>Qty</th>
-                <th>Harga Satuan</th>
-                <th>Total</th>
-                <th>Metode</th>
-                <th>Status</th>
-                <th>Aksi</th>
+                <th style="width:32px"><input type="checkbox" id="chk-all-jual" onchange="toggleAll('jual')"></th>
+                <th>Tanggal</th><th>Channel</th><th>Produk</th><th>Qty</th>
+                <th>Harga Satuan</th><th>Total</th><th>Metode</th><th>Status</th><th>Hapus</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>07 Mei 2026</td>
-                <td><span class="ch-shopee">Shopee</span></td>
-                <td>Herbal Lancar 30s (L-001)</td>
-                <td>48 box</td>
-                <td class="td-mono">Rp 25.000</td>
-                <td class="td-mono" style="color:var(--green-mid);font-weight:700">Rp 1.200.000</td>
-                <td><span class="badge badge-blue">Bank</span></td>
-                <td><span class="status-cairkan">Dicairkan</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px" onclick="openDetailJual({tgl:'07 Mei 2026',ch:'Shopee',produk:'L-001',qty:48,total:'Rp 1.200.000'})">Detail</button></td>
-              </tr>
-              <tr>
-                <td>06 Mei 2026</td>
-                <td><span class="ch-wa">WA</span></td>
-                <td>Herbal Tension 10s (L-002)</td>
-                <td>30 box</td>
-                <td class="td-mono">Rp 22.000</td>
-                <td class="td-mono" style="color:var(--green-mid);font-weight:700">Rp 660.000</td>
-                <td><span class="badge badge-gold">Tunai</span></td>
-                <td><span class="status-cairkan">Dicairkan</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
-              <tr>
-                <td>05 Mei 2026</td>
-                <td><span class="ch-tiktok">TikTok</span></td>
-                <td>Herbal Lancar 30s (L-001)</td>
-                <td>120 box</td>
-                <td class="td-mono">Rp 24.000</td>
-                <td class="td-mono" style="color:var(--green-mid);font-weight:700">Rp 2.880.000</td>
-                <td><span class="badge badge-blue">Bank</span></td>
-                <td><span class="status-pending">Pending</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
-              <tr>
-                <td>04 Mei 2026</td>
-                <td><span class="ch-shopee">Shopee</span></td>
-                <td>Herbal Lancar 30s (L-001)</td>
-                <td>200 box</td>
-                <td class="td-mono">Rp 25.000</td>
-                <td class="td-mono" style="color:var(--green-mid);font-weight:700">Rp 5.000.000</td>
-                <td><span class="badge badge-blue">Bank</span></td>
-                <td><span class="status-cairkan">Dicairkan</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
-              <tr>
-                <td>03 Mei 2026</td>
-                <td><span class="ch-offline">Offline</span></td>
-                <td>Herbal Tension 10s (L-002)</td>
-                <td>50 box</td>
-                <td class="td-mono">Rp 20.000</td>
-                <td class="td-mono" style="color:var(--green-mid);font-weight:700">Rp 1.000.000</td>
-                <td><span class="badge badge-gold">Tunai</span></td>
-                <td><span class="status-cairkan">Dicairkan</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
+            <tbody id="jual-tbody">
+              <tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -2400,80 +2132,20 @@
           </div>
         </div>
         <div class="table-wrap">
+        <div class="hapus-bar" id="umum-hapus-bar">
+            <span id="umum-hapus-count">0</span> item dipilih
+            <button class="btn btn-danger" style="font-size:12px;padding:4px 12px" onclick="hapusPilihan('umum','/api/keuangan/pengeluaran',loadPengeluaranUmum)">🗑 Hapus yang dipilih</button>
+            <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px" onclick="clearPilihan('umum')">Batal</button>
+          </div>
           <table>
             <thead>
               <tr>
-                <th>Tanggal</th>
-                <th>Kategori</th>
-                <th>Keterangan</th>
-                <th>Jumlah</th>
-                <th>Metode</th>
-                <th>Sumber</th>
-                <th>Bukti</th>
-                <th>Aksi</th>
+                <th style="width:32px"><input type="checkbox" id="chk-all-umum" onchange="toggleAll('umum')"></th>
+                <th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th>Jumlah</th><th>Metode</th><th>Sumber</th><th>Hapus</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>07 Mei 2026</td>
-                <td><span class="kode kode-buy">BUY</span></td>
-                <td>Jahe Merah 50 kg — CV. Nusantara Hijau</td>
-                <td class="td-mono" style="color:var(--red)">−Rp 1.100.000</td>
-                <td><span class="badge badge-blue">Bank</span></td>
-                <td><span class="badge badge-gray" style="font-size:10px">Auto (Log Penerimaan)</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px" onclick="openBuktiModal('TRM-001','Jahe Merah','07 Mei 2026',true)">📎</button></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
-              <tr>
-                <td>06 Mei 2026</td>
-                <td><span class="kode kode-tool">TOOL</span></td>
-                <td>Kursi kerja ergonomis × 2 + Meja admin</td>
-                <td class="td-mono" style="color:var(--red)">−Rp 850.000</td>
-                <td><span class="badge badge-blue">Bank</span></td>
-                <td><span class="badge badge-blue" style="font-size:10px">Manual</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px" onclick="openBuktiModal('UMM-001','Kursi & Meja','06 Mei 2026',false)">📎</button></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
-              <tr>
-                <td>05 Mei 2026</td>
-                <td><span class="kode kode-law">LAW</span></td>
-                <td>Biaya perpanjangan sertifikat BPOM RI MD</td>
-                <td class="td-mono" style="color:var(--red)">−Rp 500.000</td>
-                <td><span class="badge badge-blue">Bank</span></td>
-                <td><span class="badge badge-blue" style="font-size:10px">Manual</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px" onclick="openBuktiModal('UMM-002','BPOM Renewal','05 Mei 2026',true)">📎</button></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
-              <tr>
-                <td>04 Mei 2026</td>
-                <td><span class="kode kode-ads">ADS</span></td>
-                <td>Meta Ads / Facebook Ads — Kampanye Herbal Lancar</td>
-                <td class="td-mono" style="color:var(--red)">−Rp 2.500.000</td>
-                <td><span class="badge badge-blue">Bank</span></td>
-                <td><span class="badge badge-blue" style="font-size:10px">Manual</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px">📎</button></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
-              <tr>
-                <td>01 Mei 2026</td>
-                <td><span class="kode kode-gk">GK</span></td>
-                <td>Gaji karyawan bulan Mei 2026 (3 orang)</td>
-                <td class="td-mono" style="color:var(--red)">−Rp 6.000.000</td>
-                <td><span class="badge badge-blue">Bank</span></td>
-                <td><span class="badge badge-blue" style="font-size:10px">Manual</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px">📎</button></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
-              <tr>
-                <td>01 Mei 2026</td>
-                <td><span class="kode kode-tool">TOOL</span></td>
-                <td>Mesin pengering / dehydrator herbal 6 tray</td>
-                <td class="td-mono" style="color:var(--red)">−Rp 3.200.000</td>
-                <td><span class="badge badge-blue">Bank</span></td>
-                <td><span class="badge badge-blue" style="font-size:10px">Manual</span></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:3px 8px" onclick="openBuktiModal('UMM-003','Mesin Pengering','01 Mei 2026',false)">📎</button></td>
-                <td><button class="btn btn-secondary" style="font-size:11px;padding:4px 10px">Detail</button></td>
-              </tr>
+            <tbody id="umum-tbody">
+              <tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
             </tbody>
           </table>
         </div>
@@ -3206,6 +2878,209 @@ async function loadUsers() {
 }
 document.getElementById('user-modal').addEventListener('click', function(e) { if(e.target===this) closeUserModal(); });
 
+// ── CHECKBOX UTILITIES ──
+function toggleAll(prefix) {
+  const master = document.getElementById('chk-all-' + prefix);
+  document.querySelectorAll('#' + prefix + '-tbody .row-chk').forEach(cb => cb.checked = master.checked);
+  updateDeleteBtn(prefix);
+}
+function updateDeleteBtn(prefix) {
+  const count = document.querySelectorAll('#' + prefix + '-tbody .row-chk:checked').length;
+  const bar = document.getElementById(prefix + '-hapus-bar');
+  const cnt = document.getElementById(prefix + '-hapus-count');
+  if (bar) bar.classList.toggle('show', count > 0);
+  if (cnt) cnt.textContent = count;
+}
+function clearPilihan(prefix) {
+  document.querySelectorAll('#' + prefix + '-tbody .row-chk').forEach(cb => cb.checked = false);
+  const master = document.getElementById('chk-all-' + prefix);
+  if (master) master.checked = false;
+  updateDeleteBtn(prefix);
+}
+async function hapusPilihan(prefix, apiPath, reloadFn) {
+  const ids = [...document.querySelectorAll('#' + prefix + '-tbody .row-chk:checked')].map(cb => cb.value);
+  if (!ids.length) return;
+  if (!confirm('Hapus ' + ids.length + ' data yang dipilih? Tindakan ini tidak bisa dibatalkan.')) return;
+  const token = localStorage.getItem('lancar_token');
+  let errors = 0;
+  for (const id of ids) {
+    try {
+      const res = await fetch(API + apiPath + '/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+      if (!res.ok) errors++;
+    } catch(e) { errors++; }
+  }
+  if (errors) showToast('⚠ ' + errors + ' data gagal dihapus');
+  else showToast('🗑 ' + ids.length + ' data berhasil dihapus');
+  reloadFn();
+}
+async function hapusSatu(apiPath, id, reloadFn) {
+  if (!confirm('Hapus data ini?')) return;
+  const token = localStorage.getItem('lancar_token');
+  try {
+    const res = await fetch(API + apiPath + '/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) throw new Error();
+    showToast('🗑 Data berhasil dihapus');
+    reloadFn();
+  } catch(e) { showToast('⚠ Gagal menghapus data'); }
+}
+
+// ── LOAD MASTER BAHAN ──
+async function loadBahan() {
+  const token = localStorage.getItem('lancar_token');
+  const tbody = document.getElementById('bahan-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat...</td></tr>';
+  try {
+    const res = await fetch(API + '/api/bahan', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data</td></tr>'; return; }
+    tbody.innerHTML = data.map(b => {
+      const nilai = (b.stok * b.harga_satuan);
+      const stokClass = b.stok < 0 ? 'color:var(--red)' : b.stok === 0 ? 'color:var(--gold)' : '';
+      const badge = b.stok < 0 ? '<span class="badge badge-red">⚠ MINUS</span>' : b.stok === 0 ? '<span class="badge badge-gold">⚡ PESAN</span>' : '<span class="badge badge-green">✓ Aman</span>';
+      return `<tr>
+        <td><input type="checkbox" class="row-chk" value="${b.id}" onchange="updateDeleteBtn('bahan')"></td>
+        <td class="td-mono">${b.kode}</td>
+        <td><strong>${b.nama}</strong>${b.keterangan ? '<div style="font-size:11px;color:var(--gray-400)">' + b.keterangan + '</div>' : ''}</td>
+        <td>${b.satuan||'—'}</td>
+        <td style="text-align:right;font-weight:700;${stokClass}">${b.stok.toLocaleString('id')}</td>
+        <td style="text-align:right">${b.stok_min.toLocaleString('id')}</td>
+        <td style="text-align:right">Rp ${b.harga_satuan.toLocaleString('id')}</td>
+        <td style="text-align:right;font-weight:600;${stokClass}">Rp ${nilai.toLocaleString('id')}</td>
+        <td>${badge}</td>
+        <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="hapusSatu('/api/bahan',${b.id},loadBahan)">🗑</button></td>
+      </tr>`;
+    }).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+
+// ── LOAD LOG PENERIMAAN ──
+async function loadPenerimaan() {
+  const token = localStorage.getItem('lancar_token');
+  const tbody = document.getElementById('penerimaan-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat...</td></tr>';
+  try {
+    const res = await fetch(API + '/api/penerimaan', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data</td></tr>'; return; }
+    const qcColor = {'MS':'#d1fae5','TMS':'#fee2e2','PENDING':'#fef3c7'};
+    const qcText = {'MS':'✓ MS','TMS':'✗ TMS','PENDING':'⏳ PENDING'};
+    tbody.innerHTML = data.map(p => `<tr>
+      <td><input type="checkbox" class="row-chk" value="${p.id}" onchange="updateDeleteBtn('penerimaan')"></td>
+      <td>${p.tanggal}</td>
+      <td><strong>${p.bahan_nama||p.bahan_kode}</strong></td>
+      <td class="td-mono">${p.jumlah} ${p.satuan||''}</td>
+      <td style="font-size:12px">${p.pemasok||'—'}</td>
+      <td class="td-mono" style="font-size:11px">${p.no_pirt||p.no_bpom_md||'—'}</td>
+      <td>${p.tgl_kadaluarsa||'—'}</td>
+      <td><span style="padding:3px 8px;border-radius:6px;font-size:11px;background:${qcColor[p.status_qc]||'#fef3c7'}">${qcText[p.status_qc]||p.status_qc}</span></td>
+      <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="hapusSatu('/api/penerimaan',${p.id},loadPenerimaan)">🗑</button></td>
+    </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+
+// ── LOAD LOG PENGELUARAN BAHAN ──
+async function loadKeluar() {
+  const token = localStorage.getItem('lancar_token');
+  const tbody = document.getElementById('keluar-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat...</td></tr>';
+  try {
+    const res = await fetch(API + '/api/keluar', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data</td></tr>'; return; }
+    tbody.innerHTML = data.map(k => `<tr>
+      <td><input type="checkbox" class="row-chk" value="${k.id}" onchange="updateDeleteBtn('keluar')"></td>
+      <td>${k.tanggal}</td>
+      <td class="td-mono">${k.no_batch_produksi||'—'}</td>
+      <td class="td-mono">${k.bahan_kode||'—'}</td>
+      <td>${k.bahan_nama||'—'}</td>
+      <td style="text-align:right;font-weight:700">${k.jumlah.toLocaleString('id')}</td>
+      <td>${k.satuan||'—'}</td>
+      <td style="font-size:12px">${k.catatan||'—'}</td>
+      <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="hapusSatu('/api/keluar',${k.id},loadKeluar)">🗑</button></td>
+    </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+
+// ── LOAD LOG PRODUKSI ──
+async function loadProduksi() {
+  const token = localStorage.getItem('lancar_token');
+  const tbody = document.getElementById('produksi-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat...</td></tr>';
+  try {
+    const res = await fetch(API + '/api/produksi', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data</td></tr>'; return; }
+    tbody.innerHTML = data.map(p => {
+      const qcBadge = p.status_qc==='MS' ? '<span class="badge badge-green">✓ MS</span>' : p.status_qc==='TMS' ? '<span class="badge badge-red">✗ TMS</span>' : '<span class="badge badge-gold">⏳ PENDING</span>';
+      const bayarBadge = p.status_bayar==='lunas' ? '<span class="badge badge-green">✓ Lunas</span>' : '<span class="badge badge-gold">⏳ Belum</span>';
+      return `<tr>
+        <td><input type="checkbox" class="row-chk" value="${p.id}" onchange="updateDeleteBtn('produksi')"></td>
+        <td>${p.tanggal}</td>
+        <td>${p.produk_nama||p.produk_kode||'—'}</td>
+        <td style="text-align:right;font-weight:700">${p.jumlah.toLocaleString('id')} BOX</td>
+        <td class="td-mono">${p.kode_produksi||'—'}</td>
+        <td>${p.tgl_kadaluarsa||'—'}</td>
+        <td>${qcBadge}</td>
+        <td>${bayarBadge}</td>
+        <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="hapusSatu('/api/produksi',${p.id},loadProduksi)">🗑</button></td>
+      </tr>`;
+    }).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+
+// ── LOAD LOG PENJUALAN ──
+async function loadPenjualan() {
+  const token = localStorage.getItem('lancar_token');
+  const tbody = document.getElementById('jual-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat...</td></tr>';
+  try {
+    const res = await fetch(API + '/api/penjualan', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data</td></tr>'; return; }
+    const chClass = {Shopee:'ch-shopee',TikTok:'ch-tiktok',WhatsApp:'ch-wa',Offline:'ch-offline'};
+    tbody.innerHTML = data.map(j => `<tr>
+      <td><input type="checkbox" class="row-chk" value="${j.id}" onchange="updateDeleteBtn('jual')"></td>
+      <td>${j.tanggal}</td>
+      <td><span class="${chClass[j.channel]||'badge badge-gray'}">${j.channel}</span></td>
+      <td>${j.produk_nama||j.produk_kode||'—'}</td>
+      <td>${j.qty} box</td>
+      <td class="td-mono">Rp ${(j.harga_satuan||0).toLocaleString('id')}</td>
+      <td class="td-mono" style="color:var(--green-mid);font-weight:700">Rp ${(j.total||0).toLocaleString('id')}</td>
+      <td>${j.metode ? '<span class="badge badge-blue">' + j.metode + '</span>' : '—'}</td>
+      <td>${j.status==='dicairkan'||j.status==='lunas' ? '<span class="status-cairkan">Dicairkan</span>' : '<span class="status-pending">Pending</span>'}</td>
+      <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="hapusSatu('/api/penjualan',${j.id},loadPenjualan)">🗑</button></td>
+    </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+
+// ── LOAD PENGELUARAN UMUM ──
+async function loadPengeluaranUmum() {
+  const token = localStorage.getItem('lancar_token');
+  const tbody = document.getElementById('umum-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat...</td></tr>';
+  try {
+    const res = await fetch(API + '/api/keuangan/pengeluaran', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data</td></tr>'; return; }
+    tbody.innerHTML = data.map(u => `<tr>
+      <td><input type="checkbox" class="row-chk" value="${u.id}" onchange="updateDeleteBtn('umum')"></td>
+      <td>${u.tanggal}</td>
+      <td><span class="kode kode-${(u.kode_kategori||'').toLowerCase()}">${u.kode_kategori}</span></td>
+      <td>${u.keterangan}</td>
+      <td class="td-mono" style="color:var(--red)">−Rp ${(u.jumlah||0).toLocaleString('id')}</td>
+      <td>${u.metode ? '<span class="badge badge-blue">' + u.metode + '</span>' : '—'}</td>
+      <td><span class="badge ${u.sumber==='auto'?'badge-gray':'badge-blue'}" style="font-size:10px">${u.sumber==='auto'?'Auto':'Manual'}</span></td>
+      <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="hapusSatu('/api/keuangan/pengeluaran',${u.id},loadPengeluaranUmum)">🗑</button></td>
+    </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+
 // Init: cek session saat halaman dibuka
 applySession();
 
@@ -3259,6 +3134,12 @@ function showPage(id) {
   document.getElementById('topbar-sub').textContent = info.sub || '';
   closeSidebar();
   if (id === 'manajemen-user') loadUsers();
+  if (id === 'master-bahan') loadBahan();
+  if (id === 'log-penerimaan') loadPenerimaan();
+  if (id === 'log-pengeluaran') loadKeluar();
+  if (id === 'log-produksi') loadProduksi();
+  if (id === 'log-penjualan') loadPenjualan();
+  if (id === 'pengeluaran-umum') loadPengeluaranUmum();
   setTimeout(() => initCharts(id), 50);
 }
 

@@ -72,6 +72,19 @@ def update_bayar(id: int, data: BayarUpdate, db: Session = Depends(get_db)):
     db.commit()
     return item
 
+@router.delete("/{id}")
+def delete(id: int, db: Session = Depends(get_db)):
+    item = db.query(LogProduksi).filter(LogProduksi.id == id).first()
+    if not item:
+        raise HTTPException(status_code=404)
+    if item.produk_kode:
+        produk = db.query(MasterProduk).filter(MasterProduk.kode == item.produk_kode).first()
+        if produk:
+            produk.stok = max(0, produk.stok - item.jumlah)
+    db.delete(item)
+    db.commit()
+    return {"ok": True}
+
 @router.post("/{id}/upload-bukti-bayar")
 def upload_bukti(id: int, file: UploadFile = File(...), db: Session = Depends(get_db)):
     item = db.query(LogProduksi).filter(LogProduksi.id == id).first()
