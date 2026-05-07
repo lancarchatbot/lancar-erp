@@ -3133,14 +3133,16 @@ function showPage(id) {
   document.getElementById('topbar-title').textContent = info.title || id;
   document.getElementById('topbar-sub').textContent = info.sub || '';
   closeSidebar();
-  if (id === 'manajemen-user') loadUsers();
-  if (id === 'master-bahan') loadBahan();
-  if (id === 'log-penerimaan') loadPenerimaan();
-  if (id === 'log-pengeluaran') loadKeluar();
-  if (id === 'log-produksi') loadProduksi();
-  if (id === 'log-penjualan') loadPenjualan();
-  if (id === 'pengeluaran-umum') loadPengeluaranUmum();
-  setTimeout(() => initCharts(id), 50);
+  setTimeout(() => {
+    if (id === 'manajemen-user') loadUsers();
+    if (id === 'master-bahan') loadBahan();
+    if (id === 'log-penerimaan') loadPenerimaan();
+    if (id === 'log-pengeluaran') loadKeluar();
+    if (id === 'log-produksi') loadProduksi();
+    if (id === 'log-penjualan') loadPenjualan();
+    if (id === 'pengeluaran-umum') loadPengeluaranUmum();
+    initCharts(id);
+  }, 0);
 }
 
 // ── CHARTS ──
