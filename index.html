@@ -33,6 +33,74 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--gray-50); color: var(--gray-900); display: flex; min-height: 100vh; font-size: 14px; }
 
+  /* ── LOGIN PAGE ── */
+  #login-page {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: linear-gradient(135deg, var(--green-dark) 0%, #0d3d22 100%);
+    align-items: center; justify-content: center;
+  }
+  #login-page.show { display: flex; }
+  .login-box {
+    background: #fff; border-radius: 18px; padding: 40px 40px 32px;
+    width: 100%; max-width: 400px; box-shadow: 0 24px 64px rgba(0,0,0,.35);
+    margin: 16px;
+  }
+  .login-logo { text-align: center; margin-bottom: 28px; }
+  .login-logo .brand { font-size: 32px; font-weight: 800; color: var(--green-dark); }
+  .login-logo .brand span { color: var(--green-accent); }
+  .login-logo .tagline { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+  .login-box h2 { font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 20px; }
+  .login-box .form-group { margin-bottom: 14px; }
+  .login-box .form-group label { font-size: 12px; font-weight: 700; color: var(--gray-600); display: block; margin-bottom: 6px; }
+  .login-box .form-group input {
+    width: 100%; padding: 10px 14px; border: 1.5px solid var(--gray-200);
+    border-radius: 8px; font-size: 14px; outline: none;
+  }
+  .login-box .form-group input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(45,134,83,.1); }
+  .login-btn {
+    width: 100%; padding: 12px; background: var(--green-mid); color: #fff;
+    border: none; border-radius: 8px; font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-top: 8px; transition: background .15s;
+  }
+  .login-btn:hover { background: var(--green-hover); }
+  .login-error { color: var(--red); font-size: 12px; text-align: center; margin-top: 10px; display: none; }
+
+  /* ── USER AVATAR TOPBAR ── */
+  .user-chip {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--green-light); border-radius: 20px; padding: 5px 12px 5px 6px;
+    cursor: pointer; position: relative;
+  }
+  .user-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: var(--green-mid); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800;
+  }
+  .user-name { font-size: 12px; font-weight: 700; color: var(--green-dark); }
+  .user-role-badge { font-size: 10px; color: var(--gray-400); }
+  .user-menu {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    background: #fff; border-radius: 10px; box-shadow: var(--shadow);
+    border: 1px solid var(--gray-200); min-width: 180px; display: none; z-index: 200;
+  }
+  .user-menu.open { display: block; }
+  .user-menu-item {
+    padding: 10px 16px; font-size: 13px; cursor: pointer; display: flex;
+    align-items: center; gap: 8px; color: var(--gray-700);
+  }
+  .user-menu-item:hover { background: var(--gray-50); }
+  .user-menu-item.danger { color: var(--red); }
+
+  /* ── AKSES DITOLAK ── */
+  .akses-ditolak {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 60vh; text-align: center; color: var(--gray-400);
+  }
+  .akses-ditolak .ico { font-size: 48px; margin-bottom: 16px; }
+  .akses-ditolak h2 { font-size: 18px; font-weight: 700; color: var(--gray-600); margin-bottom: 8px; }
+  .akses-ditolak p { font-size: 13px; }
+
   /* ── SIDEBAR ── */
   #sidebar {
     width: var(--sidebar-w); background: var(--green-dark); color: #fff;
@@ -446,6 +514,30 @@
 </head>
 <body>
 
+<!-- ═══════════════ LOGIN PAGE ═══════════════ -->
+<div id="login-page" class="show">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="brand">Lancar<span>.</span></div>
+      <div class="tagline">Sistem ERP Herbal — Stok & Keuangan</div>
+    </div>
+    <h2>Masuk ke Sistem</h2>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="login-username" placeholder="Masukkan username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-password" placeholder="Masukkan password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()" id="login-btn">Masuk</button>
+    <div class="login-error" id="login-error">Username atau password salah</div>
+    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--gray-400)">
+      Lancar ERP v2.0 · Standar BPOM/CPOTB
+    </div>
+  </div>
+</div>
+
 <!-- SIDEBAR -->
 <nav id="sidebar">
   <div class="sidebar-logo">
@@ -488,6 +580,11 @@
     <span class="icon">⚖️</span> Kalkulator Sisa Stok
   </div>
 
+  <div class="sidebar-section" id="nav-section-pengaturan" style="display:none">Pengaturan</div>
+  <div class="nav-item" id="nav-manajemen-user" style="display:none" onclick="showPage('manajemen-user')">
+    <span class="icon">👥</span> Manajemen User
+  </div>
+
   <div class="sidebar-section">Keuangan</div>
   <div class="nav-item" onclick="showPage('log-penjualan')">
     <span class="icon">🛒</span> Log Penjualan
@@ -521,8 +618,19 @@
       </div>
     </div>
     <div class="topbar-right">
-      <div class="topbar-badge">⚠ 3 Bahan Stok Rendah</div>
-      <button class="btn btn-primary" onclick="showPage('log-penerimaan')">+ Catat Penerimaan</button>
+      <div class="topbar-badge" id="topbar-stok-badge">⚠ 3 Bahan Stok Rendah</div>
+      <button class="btn btn-primary" id="btn-catat-penerimaan" onclick="showPage('log-penerimaan')">+ Catat Penerimaan</button>
+      <div class="user-chip" onclick="toggleUserMenu()">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div>
+          <div class="user-name" id="user-name-display">-</div>
+          <div class="user-role-badge" id="user-role-display">-</div>
+        </div>
+        <div class="user-menu" id="user-menu">
+          <div class="user-menu-item" onclick="showPage('manajemen-user');closeUserMenu()" id="menu-item-manajemen" style="display:none">👥 Manajemen User</div>
+          <div class="user-menu-item danger" onclick="doLogout()">🚪 Keluar</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2641,6 +2749,108 @@
       </div>
     </div>
 
+    <!-- ═══════════════ MANAJEMEN USER ═══════════════ -->
+    <div id="page-manajemen-user" class="page">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>👥 Manajemen User</h1>
+          <p>Kelola akun dan hak akses pengguna sistem</p>
+        </div>
+        <button class="btn btn-primary" onclick="openUserModal()">+ Tambah User</button>
+      </div>
+
+      <div class="alert alert-info" style="margin-bottom:20px">
+        <span>🔐</span>
+        <span>Hanya <strong>Owner</strong> yang bisa menambah, mengubah, dan menghapus akun pengguna.</span>
+      </div>
+
+      <!-- Tabel user -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Daftar Pengguna</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Nama</th><th>Username</th><th>Role</th><th>Status</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="user-table-body">
+              <tr><td colspan="5" class="empty"><div class="ico">👥</div><p>Memuat data...</p></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tabel hak akses -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-header"><span class="card-title">📋 Ringkasan Hak Akses per Role</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Menu</th><th>Owner</th><th>Admin</th><th>Admin Keuangan</th><th>Produksi</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Dashboard</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Master Bahan</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+              <tr><td>Log Penerimaan</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+              <tr><td>Log Pengeluaran</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Master Produk</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+              <tr><td>Log Produksi</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Resep / BOM</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td></tr>
+              <tr><td>Kalkulasi HPP</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+              <tr><td>Kalkulator Sisa Stok</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td></tr>
+              <tr><td>Log Penjualan</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td></tr>
+              <tr><td>Pengeluaran Umum</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td></tr>
+              <tr><td>Laporan Keuangan</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td></tr>
+              <tr><td>Hapus Data</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+              <tr><td>Manajemen User</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Tambah/Edit User -->
+    <div class="modal-backdrop" id="user-modal">
+      <div class="modal" style="max-width:480px">
+        <div class="modal-header">
+          <div><div class="title" id="user-modal-title">+ Tambah User</div><div class="subtitle">Isi data akun pengguna baru</div></div>
+          <button class="modal-close" onclick="closeUserModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="user-edit-id">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nama Lengkap</label>
+              <input type="text" id="user-nama" placeholder="Contoh: Siti Aminah">
+            </div>
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" id="user-username" placeholder="Contoh: siti.admin">
+            </div>
+          </div>
+          <div class="form-grid" style="margin-top:12px">
+            <div class="form-group">
+              <label>Password <span id="user-pass-hint" style="font-weight:400;color:var(--gray-400)">(wajib diisi)</span></label>
+              <input type="password" id="user-password" placeholder="Minimal 6 karakter">
+            </div>
+            <div class="form-group">
+              <label>Role / Jabatan</label>
+              <select id="user-role">
+                <option value="admin">Admin — Stok & Produksi</option>
+                <option value="admin-keuangan">Admin Keuangan</option>
+                <option value="produksi">Produksi</option>
+                <option value="owner">Owner — Akses Penuh</option>
+              </select>
+            </div>
+          </div>
+          <div id="user-error" class="alert alert-danger" style="display:none;margin-top:12px"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeUserModal()">Batal</button>
+          <button class="btn btn-primary" onclick="saveUser()">💾 Simpan</button>
+        </div>
+      </div>
+    </div>
+
     <!-- MODAL: Tambah Penjualan -->
     <div class="modal-backdrop" id="jual-modal">
       <div class="modal" style="max-width:600px">
@@ -2803,6 +3013,202 @@
 </div><!-- /main -->
 
 <script>
+// ── API CONFIG ──
+const API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000' : '';
+
+// ── ROLE ACCESS MAP ──
+const ROLE_ACCESS = {
+  'owner':          ['dashboard','master-bahan','log-penerimaan','log-pengeluaran','master-produk','log-produksi','resep-bom','kalkulasi-hpp','sisa-stok','log-penjualan','pengeluaran-umum','laporan-keuangan','manajemen-user'],
+  'admin':          ['dashboard','master-bahan','log-penerimaan','log-pengeluaran','master-produk','log-produksi','resep-bom','kalkulasi-hpp','sisa-stok'],
+  'admin-keuangan': ['dashboard','log-penerimaan','log-pengeluaran','log-produksi','kalkulasi-hpp','sisa-stok','log-penjualan','pengeluaran-umum','laporan-keuangan'],
+  'produksi':       ['dashboard','log-produksi','log-pengeluaran'],
+};
+const ROLE_LABEL = {
+  'owner': 'Owner', 'admin': 'Admin',
+  'admin-keuangan': 'Admin Keuangan', 'produksi': 'Produksi',
+};
+
+let currentUser = null;
+
+// ── AUTH: LOGIN ──
+async function doLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  errEl.style.display = 'none';
+  if (!username || !password) { errEl.textContent = 'Username dan password wajib diisi'; errEl.style.display = 'block'; return; }
+  btn.textContent = 'Memuat...'; btn.disabled = true;
+  try {
+    const res = await fetch(API + '/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    if (!res.ok) { throw new Error('salah'); }
+    const data = await res.json();
+    localStorage.setItem('lancar_token', data.token);
+    localStorage.setItem('lancar_user', JSON.stringify(data.user));
+    currentUser = data.user;
+    applySession();
+  } catch(e) {
+    errEl.textContent = 'Username atau password salah';
+    errEl.style.display = 'block';
+  } finally {
+    btn.textContent = 'Masuk'; btn.disabled = false;
+  }
+}
+
+// ── AUTH: LOGOUT ──
+function doLogout() {
+  localStorage.removeItem('lancar_token');
+  localStorage.removeItem('lancar_user');
+  currentUser = null;
+  closeUserMenu();
+  document.getElementById('login-page').classList.add('show');
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+// ── AUTH: APPLY SESSION ──
+function applySession() {
+  const token = localStorage.getItem('lancar_token');
+  const userStr = localStorage.getItem('lancar_user');
+  if (!token || !userStr) { document.getElementById('login-page').classList.add('show'); return; }
+  try { currentUser = JSON.parse(userStr); } catch(e) { doLogout(); return; }
+
+  // Sembunyikan login page
+  document.getElementById('login-page').classList.remove('show');
+
+  // Update topbar
+  const initials = currentUser.nama.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('user-avatar').textContent = initials;
+  document.getElementById('user-name-display').textContent = currentUser.nama;
+  document.getElementById('user-role-display').textContent = ROLE_LABEL[currentUser.role] || currentUser.role;
+
+  // Tampilkan menu manajemen user hanya untuk owner
+  const isOwner = currentUser.role === 'owner';
+  document.getElementById('menu-item-manajemen').style.display = isOwner ? 'flex' : 'none';
+  document.getElementById('nav-manajemen-user').style.display = isOwner ? 'flex' : 'none';
+  document.getElementById('nav-section-pengaturan').style.display = isOwner ? 'block' : 'none';
+
+  // Sembunyikan nav item yang tidak boleh diakses
+  const akses = ROLE_ACCESS[currentUser.role] || [];
+  document.querySelectorAll('.nav-item[onclick]').forEach(el => {
+    const onclick = el.getAttribute('onclick') || '';
+    const match = onclick.match(/'([^']+)'/);
+    if (match) {
+      const pageId = match[1];
+      if (!akses.includes(pageId)) el.style.display = 'none';
+      else el.style.display = '';
+    }
+  });
+
+  // Sembunyikan tombol catat penerimaan untuk produksi & admin keuangan
+  const hideCatat = ['produksi','admin-keuangan'];
+  document.getElementById('btn-catat-penerimaan').style.display = hideCatat.includes(currentUser.role) ? 'none' : '';
+
+  // Arahkan ke dashboard
+  showPage('dashboard');
+}
+
+// ── USER MENU TOPBAR ──
+function toggleUserMenu() {
+  document.getElementById('user-menu').classList.toggle('open');
+}
+function closeUserMenu() {
+  document.getElementById('user-menu').classList.remove('open');
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.user-chip')) closeUserMenu();
+});
+
+// ── CEK AKSES HALAMAN ──
+function canAccess(pageId) {
+  if (!currentUser) return false;
+  return (ROLE_ACCESS[currentUser.role] || []).includes(pageId);
+}
+
+// ── MANAJEMEN USER ──
+function openUserModal(userId) {
+  document.getElementById('user-modal-title').textContent = userId ? 'Edit User' : '+ Tambah User';
+  document.getElementById('user-edit-id').value = userId || '';
+  document.getElementById('user-nama').value = '';
+  document.getElementById('user-username').value = '';
+  document.getElementById('user-password').value = '';
+  document.getElementById('user-role').value = 'admin';
+  document.getElementById('user-error').style.display = 'none';
+  document.getElementById('user-pass-hint').textContent = userId ? '(kosongkan jika tidak diubah)' : '(wajib diisi)';
+  document.getElementById('user-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeUserModal() {
+  document.getElementById('user-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+async function saveUser() {
+  const id = document.getElementById('user-edit-id').value;
+  const nama = document.getElementById('user-nama').value.trim();
+  const username = document.getElementById('user-username').value.trim();
+  const password = document.getElementById('user-password').value;
+  const role = document.getElementById('user-role').value;
+  const errEl = document.getElementById('user-error');
+  errEl.style.display = 'none';
+  if (!nama || !username || (!id && !password)) {
+    errEl.textContent = 'Nama, username' + (!id ? ', dan password' : '') + ' wajib diisi';
+    errEl.style.display = 'block'; return;
+  }
+  const token = localStorage.getItem('lancar_token');
+  const body = id ? { nama, role, ...(password ? { password } : {}) } : { nama, username, password, role };
+  const url = API + '/api/users' + (id ? '/' + id : '');
+  const method = id ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: JSON.stringify(body) });
+    if (!res.ok) { const d = await res.json(); throw new Error(d.detail || 'Gagal'); }
+    closeUserModal();
+    loadUsers();
+    showToast('✅ User berhasil ' + (id ? 'diperbarui' : 'ditambahkan'));
+  } catch(e) {
+    errEl.textContent = e.message; errEl.style.display = 'block';
+  }
+}
+async function deleteUser(id, nama) {
+  if (!confirm('Hapus akun "' + nama + '"? Tindakan ini tidak bisa dibatalkan.')) return;
+  const token = localStorage.getItem('lancar_token');
+  try {
+    const res = await fetch(API + '/api/users/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) { const d = await res.json(); throw new Error(d.detail); }
+    loadUsers();
+    showToast('🗑 Akun berhasil dihapus');
+  } catch(e) { showToast('⚠ ' + e.message); }
+}
+async function loadUsers() {
+  const token = localStorage.getItem('lancar_token');
+  const tbody = document.getElementById('user-table-body');
+  if (!tbody) return;
+  try {
+    const res = await fetch(API + '/api/users', { headers: { 'Authorization': 'Bearer ' + token } });
+    const users = await res.json();
+    tbody.innerHTML = users.map(u => `
+      <tr>
+        <td><strong>${u.nama}</strong></td>
+        <td><span style="font-family:monospace;font-size:12px">${u.username}</span></td>
+        <td><span class="badge ${u.role==='owner'?'badge-green':u.role==='admin-keuangan'?'badge-blue':u.role==='produksi'?'badge-gold':'badge-gray'}">${ROLE_LABEL[u.role]||u.role}</span></td>
+        <td>${u.aktif ? '<span class="badge badge-green">Aktif</span>' : '<span class="badge badge-red">Nonaktif</span>'}</td>
+        <td>
+          <button class="btn btn-secondary" style="font-size:11px;padding:4px 10px;margin-right:4px" onclick="openUserModal(${u.id})">Edit</button>
+          <button class="btn btn-danger" style="font-size:11px;padding:4px 10px" onclick="deleteUser(${u.id},'${u.nama}')">Hapus</button>
+        </td>
+      </tr>
+    `).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+document.getElementById('user-modal').addEventListener('click', function(e) { if(e.target===this) closeUserModal(); });
+
+// Init: cek session saat halaman dibuka
+applySession();
+
 // ── MOBILE SIDEBAR ──
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
@@ -2827,9 +3233,21 @@ const pages = {
   'log-penjualan': { title: 'Log Penjualan', sub: 'Pencatatan penjualan per channel — Shopee, TikTok, WA, Offline' },
   'pengeluaran-umum': { title: 'Pengeluaran Umum', sub: 'Biaya operasional — peralatan, gaji, legal, iklan, dll' },
   'laporan-keuangan': { title: 'Laporan Keuangan', sub: 'Arus kas, laba rugi, dan rekap per kategori' },
+  'manajemen-user': { title: 'Manajemen User', sub: 'Kelola akun dan hak akses pengguna' },
 };
 
 function showPage(id) {
+  // Cek hak akses
+  if (currentUser && !canAccess(id)) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const pg = document.getElementById('page-' + id);
+    if (pg) {
+      pg.classList.add('active');
+      pg.innerHTML = '<div class="akses-ditolak"><div class="ico">🔒</div><h2>Akses Ditolak</h2><p>Anda tidak memiliki izin untuk membuka halaman ini.<br>Hubungi Owner untuk mengubah hak akses.</p></div>';
+    }
+    closeSidebar();
+    return;
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
@@ -2840,6 +3258,7 @@ function showPage(id) {
   document.getElementById('topbar-title').textContent = info.title || id;
   document.getElementById('topbar-sub').textContent = info.sub || '';
   closeSidebar();
+  if (id === 'manajemen-user') loadUsers();
   setTimeout(() => initCharts(id), 50);
 }
 
