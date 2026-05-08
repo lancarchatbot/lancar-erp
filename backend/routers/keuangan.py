@@ -48,6 +48,19 @@ def upload_bukti(id: int, file: UploadFile = File(...), db: Session = Depends(ge
     db.commit()
     return {"filename": fname}
 
+@router.post("/pengeluaran/bulk")
+def bulk_import_pengeluaran(rows: list[PengeluaranCreate], db: Session = Depends(get_db)):
+    ok, errors = 0, []
+    for i, data in enumerate(rows):
+        try:
+            item = PengeluaranUmum(**data.model_dump(), sumber="import")
+            db.add(item)
+            ok += 1
+        except Exception as e:
+            errors.append({"baris": i + 2, "error": str(e)})
+    db.commit()
+    return {"berhasil": ok, "gagal": len(errors), "errors": errors}
+
 @router.delete("/pengeluaran/{id}")
 def delete_pengeluaran(id: int, db: Session = Depends(get_db)):
     item = db.query(PengeluaranUmum).filter(PengeluaranUmum.id == id).first()

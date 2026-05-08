@@ -44,6 +44,20 @@ def update_status(id: int, data: StatusUpdate, db: Session = Depends(get_db)):
     db.commit()
     return item
 
+@router.post("/bulk")
+def bulk_import(rows: list[PenjualanCreate], db: Session = Depends(get_db)):
+    ok, errors = 0, []
+    for i, data in enumerate(rows):
+        try:
+            total = data.harga_satuan * data.qty
+            item = LogPenjualan(**data.model_dump(), total=total)
+            db.add(item)
+            ok += 1
+        except Exception as e:
+            errors.append({"baris": i + 2, "error": str(e)})
+    db.commit()
+    return {"berhasil": ok, "gagal": len(errors), "errors": errors}
+
 @router.delete("/{id}")
 def delete(id: int, db: Session = Depends(get_db)):
     item = db.query(LogPenjualan).filter(LogPenjualan.id == id).first()

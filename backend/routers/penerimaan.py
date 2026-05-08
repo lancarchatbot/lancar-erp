@@ -101,12 +101,27 @@ def upload_bukti(id: int, file: UploadFile = File(...), db: Session = Depends(ge
     db.commit()
     return {"filename": fname}
 
+@router.post("/bulk")
+def bulk_import(rows: list[PenerimaanCreate], db: Session = Depends(get_db)):
+    ok, errors = 0, []
+    for i, data in enumerate(rows):
+        try:
+            item = LogPenerimaan(**data.model_dump())
+            db.add(item)
+            bahan = db.query(MasterBahan).filter(MasterBahan.kode == data.bahan_kode).first()
+            if bahan:
+                bahan.stok += data.jumlah
+            ok += 1
+        except Exception as e:
+            errors.append({"baris": i + 2, "error": str(e)})
+    db.commit()
+    return {"berhasil": ok, "gagal": len(errors), "errors": errors}
+
 @router.delete("/{id}")
 def delete(id: int, db: Session = Depends(get_db)):
     item = db.query(LogPenerimaan).filter(LogPenerimaan.id == id).first()
     if not item:
         raise HTTPException(status_code=404)
-    # Kurangi stok kembali
     bahan = db.query(MasterBahan).filter(MasterBahan.kode == item.bahan_kode).first()
     if bahan:
         bahan.stok -= item.jumlah

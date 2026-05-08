@@ -945,7 +945,10 @@
           <h1>📥 Log Penerimaan Bahan</h1>
           <p>Pencatatan bahan masuk sesuai standar audit <span class="bpom-badge">BPOM</span> <span class="bpom-badge">CPOTB</span></p>
         </div>
-        <button class="btn btn-primary">+ Tambah Entri Penerimaan</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-secondary" onclick="openImport('penerimaan')">📥 Import CSV</button>
+          <button class="btn btn-primary">+ Tambah Entri Penerimaan</button>
+        </div>
       </div>
 
       <div class="alert alert-info">
@@ -2060,7 +2063,8 @@
           <h1>🛒 Log Penjualan</h1>
           <p>Pencatatan penjualan per channel — Shopee, TikTok, WhatsApp, Offline</p>
         </div>
-        <div style="display:flex;gap:10px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-secondary" onclick="openImport('penjualan')">📥 Import CSV</button>
           <button class="btn btn-secondary" onclick="openJualModal()">+ Tambah Penjualan</button>
         </div>
       </div>
@@ -2149,7 +2153,10 @@
           <h1>💸 Pengeluaran Umum</h1>
           <p>Semua biaya operasional di luar pembelian bahan baku — peralatan, legal, gaji, iklan, dll</p>
         </div>
-        <button class="btn btn-primary" onclick="openKeluarModal()">+ Tambah Pengeluaran</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-secondary" onclick="openImport('pengeluaran')">📥 Import CSV</button>
+          <button class="btn btn-primary" onclick="openKeluarModal()">+ Tambah Pengeluaran</button>
+        </div>
       </div>
 
       <div class="alert alert-info" style="margin-bottom:16px">
@@ -4125,8 +4132,287 @@ function switchLKTab(tab) {
   setTimeout(() => initCharts('laporan-keuangan-' + tab), 50);
 }
 
+// ── BULK IMPORT CSV ──
+const IMPORT_CONFIG = {
+  penerimaan: {
+    title: '📥 Import Log Penerimaan Bahan',
+    apiUrl: '/api/penerimaan/bulk',
+    reload: () => loadPenerimaan(),
+    cols: ['tanggal','bahan_kode','bahan_nama','pemasok','jumlah','satuan','harga_satuan','tgl_kadaluarsa','no_pirt','no_bpom_md','status_qc'],
+    required: ['tanggal','bahan_kode','jumlah'],
+    contoh: [
+      ['2026-05-01','JHE','Jahe','Toko Rempah Bandung','50','gram','50','2027-01-01','5133515011836','','MS'],
+      ['2026-05-02','KYT','Kunyit','Toko Rempah Bandung','30','gram','60','2027-02-01','','','PENDING'],
+    ],
+    hint: 'status_qc: MS / TMS / PENDING',
+  },
+  penjualan: {
+    title: '📥 Import Log Penjualan',
+    apiUrl: '/api/penjualan/bulk',
+    reload: () => loadPenjualan(),
+    cols: ['tanggal','channel','produk_kode','produk_nama','qty','harga_satuan','metode','status'],
+    required: ['tanggal','channel','qty','harga_satuan'],
+    contoh: [
+      ['2026-05-01','Shopee','LCR-20','Lancar Box 20','10','45000','BANK','pending'],
+      ['2026-05-02','TikTok','LCR-10','Lancar Box 10','5','40000','E-WALLET','lunas'],
+    ],
+    hint: 'channel: Shopee / TikTok / WhatsApp / Offline · metode: TUNAI / BANK / E-WALLET',
+  },
+  pengeluaran: {
+    title: '📥 Import Pengeluaran Umum',
+    apiUrl: '/api/keuangan/pengeluaran/bulk',
+    reload: () => loadPengeluaranUmum(),
+    cols: ['tanggal','kode_kategori','keterangan','jumlah','metode'],
+    required: ['tanggal','kode_kategori','keterangan','jumlah'],
+    contoh: [
+      ['2026-05-01','ADS','Iklan Meta Ads Mei','500000','BANK'],
+      ['2026-05-03','TOOL','Beli timbangan digital','250000','TUNAI'],
+    ],
+    hint: 'metode: TUNAI / BANK / E-WALLET',
+  },
+};
+
+let _importType = '';
+let _importRows = [];
+
+function openImport(type) {
+  _importType = type;
+  _importRows = [];
+  const cfg = IMPORT_CONFIG[type];
+  document.getElementById('import-modal-title').textContent = cfg.title;
+  document.getElementById('import-step1').style.display = 'block';
+  document.getElementById('import-step2').style.display = 'none';
+  document.getElementById('import-submit-btn').style.display = 'none';
+  document.getElementById('import-file-info').style.display = 'none';
+  document.getElementById('import-result').style.display = 'none';
+  document.getElementById('import-file-input').value = '';
+  document.getElementById('import-modal').classList.add('open');
+}
+
+function closeImport() {
+  document.getElementById('import-modal').classList.remove('open');
+}
+
+function resetImport() {
+  document.getElementById('import-step1').style.display = 'block';
+  document.getElementById('import-step2').style.display = 'none';
+  document.getElementById('import-submit-btn').style.display = 'none';
+  document.getElementById('import-file-input').value = '';
+  _importRows = [];
+}
+
+function handleImportDrop(e) {
+  e.preventDefault();
+  document.getElementById('import-drop-area').style.borderColor = 'var(--gray-200)';
+  const file = e.dataTransfer.files[0];
+  if (file) handleImportFile(file);
+}
+
+function handleImportFile(file) {
+  if (!file) return;
+  if (!file.name.endsWith('.csv')) { showToast('⚠ File harus berformat .csv'); return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('⚠ File terlalu besar (maks 5 MB)'); return; }
+  const info = document.getElementById('import-file-info');
+  info.textContent = `📄 ${file.name} · ${(file.size/1024).toFixed(1)} KB`;
+  info.style.display = 'block';
+  const reader = new FileReader();
+  reader.onload = e => parseImportCSV(e.target.result);
+  reader.readAsText(file, 'UTF-8');
+}
+
+function parseImportCSV(text) {
+  const cfg = IMPORT_CONFIG[_importType];
+  const lines = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(l => l.trim());
+  if (lines.length < 2) { showToast('⚠ File kosong atau hanya berisi header'); return; }
+
+  // Parse header baris pertama
+  const headers = parseCSVLine(lines[0]).map(h => h.trim().toLowerCase());
+  const colMap = {};
+  cfg.cols.forEach(c => {
+    const idx = headers.indexOf(c.toLowerCase());
+    if (idx >= 0) colMap[c] = idx;
+  });
+
+  // Cek kolom wajib ada di file
+  const missing = cfg.required.filter(r => !(r in colMap));
+  if (missing.length) {
+    showToast('⚠ Kolom wajib tidak ada: ' + missing.join(', '));
+    return;
+  }
+
+  const rows = [], errLines = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const vals = parseCSVLine(lines[i]);
+    const obj = {};
+    cfg.cols.forEach(c => {
+      if (c in colMap) obj[c] = (vals[colMap[c]] || '').trim();
+    });
+    // Validasi kolom wajib
+    const rowErr = cfg.required.filter(r => !obj[r]);
+    if (rowErr.length) { errLines.push(`Baris ${i+1}: kolom "${rowErr.join(', ')}" kosong`); continue; }
+    rows.push(obj);
+  }
+
+  _importRows = rows;
+  showImportPreview(rows, errLines);
+}
+
+function parseCSVLine(line) {
+  const result = [], re = /("([^"]*(?:""[^"]*)*)"|[^,]*)(,|$)/g;
+  let m;
+  while ((m = re.exec(line)) !== null) {
+    result.push(m[2] !== undefined ? m[2].replace(/""/g,'"') : m[1]);
+    if (m[3] === '') break;
+  }
+  return result;
+}
+
+function showImportPreview(rows, errLines) {
+  const cfg = IMPORT_CONFIG[_importType];
+  document.getElementById('import-step1').style.display = 'none';
+  document.getElementById('import-step2').style.display = 'block';
+
+  const countEl = document.getElementById('import-preview-count');
+  countEl.textContent = `${rows.length} baris siap diimport` + (errLines.length ? ` · ${errLines.length} baris dilewati` : '');
+
+  const errEl = document.getElementById('import-error-list');
+  if (errLines.length) {
+    errEl.innerHTML = '⚠ Baris berikut dilewati karena data tidak lengkap:<br>' + errLines.slice(0,10).join('<br>') + (errLines.length>10?`<br>... dan ${errLines.length-10} lainnya`:'');
+    errEl.style.display = 'block';
+  } else { errEl.style.display = 'none'; }
+
+  // Render preview (max 8 baris)
+  const headEl = document.getElementById('import-preview-head');
+  const bodyEl = document.getElementById('import-preview-body');
+  headEl.innerHTML = '<tr style="background:var(--gray-100)">' + cfg.cols.map(c=>`<th style="padding:6px 10px;font-size:11px;white-space:nowrap">${c}</th>`).join('') + '</tr>';
+  bodyEl.innerHTML = rows.slice(0,8).map(r =>
+    '<tr>' + cfg.cols.map(c => `<td style="padding:5px 10px;border-top:1px solid var(--gray-100);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis" title="${r[c]||''}">${r[c]||'<span style="color:var(--gray-300)">—</span>'}</td>`).join('') + '</tr>'
+  ).join('') + (rows.length > 8 ? `<tr><td colspan="${cfg.cols.length}" style="text-align:center;padding:8px;color:var(--gray-400);font-size:12px">... dan ${rows.length-8} baris lainnya</td></tr>` : '');
+
+  if (rows.length > 0) {
+    document.getElementById('import-submit-btn').style.display = '';
+    document.getElementById('import-submit-count').textContent = rows.length;
+  }
+  document.getElementById('import-result').style.display = 'none';
+}
+
+async function submitImport() {
+  if (!_importRows.length) return;
+  const cfg = IMPORT_CONFIG[_importType];
+  const token = localStorage.getItem('lancar_token');
+  const btn = document.getElementById('import-submit-btn');
+  btn.disabled = true; btn.textContent = '⏳ Mengimport...';
+
+  try {
+    // Konversi tipe data sesuai field
+    const payload = _importRows.map(r => {
+      const obj = {...r};
+      if ('jumlah' in obj) obj.jumlah = parseFloat(obj.jumlah) || 0;
+      if ('qty' in obj) obj.qty = parseInt(obj.qty) || 0;
+      if ('harga_satuan' in obj) obj.harga_satuan = parseFloat(obj.harga_satuan) || 0;
+      if ('jumlah_per_pcs' in obj) obj.jumlah_per_pcs = parseFloat(obj.jumlah_per_pcs) || 0;
+      if (obj.status_qc === '') obj.status_qc = 'PENDING';
+      if (obj.status === '') obj.status = 'pending';
+      // Hapus field kosong opsional
+      Object.keys(obj).forEach(k => { if (obj[k] === '') obj[k] = null; });
+      return obj;
+    });
+
+    const res = await fetch(API + cfg.apiUrl, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    const resultEl = document.getElementById('import-result');
+    if (data.berhasil > 0) {
+      resultEl.style.background = '#d1fae5'; resultEl.style.color = 'var(--green-dark)';
+      resultEl.innerHTML = `✅ ${data.berhasil} data berhasil diimport` + (data.gagal ? ` · ⚠ ${data.gagal} gagal` : '');
+      cfg.reload();
+      showToast(`✅ Import selesai: ${data.berhasil} data masuk`);
+    } else {
+      resultEl.style.background = '#fee2e2'; resultEl.style.color = 'var(--red)';
+      resultEl.innerHTML = `⚠ Semua baris gagal diimport. Cek format data.`;
+    }
+    resultEl.style.display = 'block';
+    document.getElementById('import-submit-btn').style.display = 'none';
+    _importRows = [];
+  } catch(e) {
+    showToast('⚠ Gagal import: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '📥 Import';
+  }
+}
+
+function downloadImportTemplate() {
+  const cfg = IMPORT_CONFIG[_importType];
+  const header = cfg.cols.join(',');
+  const contoh = cfg.contoh.map(r => r.map(v => `"${v}"`).join(',')).join('\n');
+  const hint = cfg.hint ? `\n# Keterangan: ${cfg.hint}` : '';
+  const csv = `${header}\n${contoh}${hint}`;
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `template-import-${_importType}.csv`; a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ Template diunduh');
+}
+
+document.getElementById('import-modal').addEventListener('click', function(e) { if(e.target===this) closeImport(); });
+
 // Init dashboard charts on load
 setTimeout(() => initCharts('dashboard'), 100);
 </script>
+
+<!-- MODAL IMPORT CSV -->
+<div class="modal-backdrop" id="import-modal">
+  <div class="modal" style="max-width:700px;width:95vw">
+    <div class="modal-header">
+      <h3 id="import-modal-title">📥 Import Data CSV</h3>
+      <button class="modal-close" onclick="closeImport()">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Step 1: Upload -->
+      <div id="import-step1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <p style="margin:0;font-size:13px;color:var(--gray-400)">Upload file CSV. Kolom harus sesuai template.</p>
+          <button class="btn btn-download" style="font-size:12px;padding:5px 14px" onclick="downloadImportTemplate()">⬇ Download Template CSV</button>
+        </div>
+        <div id="import-drop-area" style="border:2px dashed var(--gray-200);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:border-color .2s;background:var(--gray-50)"
+          ondragover="event.preventDefault();this.style.borderColor='var(--green-mid)'"
+          ondragleave="this.style.borderColor='var(--gray-200)'"
+          ondrop="handleImportDrop(event)"
+          onclick="document.getElementById('import-file-input').click()">
+          <div style="font-size:32px;margin-bottom:8px">📄</div>
+          <div style="font-size:14px;font-weight:600;color:var(--gray-600)">Klik atau drag & drop file CSV di sini</div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:4px">Format: .csv · Maks 5 MB</div>
+        </div>
+        <input type="file" id="import-file-input" accept=".csv" style="display:none" onchange="handleImportFile(this.files[0])">
+        <div id="import-file-info" style="display:none;margin-top:10px;padding:8px 12px;background:var(--green-light);border-radius:8px;font-size:13px;color:var(--green-dark)"></div>
+      </div>
+
+      <!-- Step 2: Preview -->
+      <div id="import-step2" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-size:13px"><strong id="import-preview-count"></strong></div>
+          <button class="btn btn-secondary" style="font-size:12px;padding:4px 10px" onclick="resetImport()">↩ Ganti File</button>
+        </div>
+        <div id="import-error-list" style="display:none;margin-bottom:10px;padding:10px;background:#fff5f5;border-radius:8px;border:1px solid #fecaca;font-size:12px;color:var(--red)"></div>
+        <div style="overflow-x:auto;max-height:260px;overflow-y:auto;border:1px solid var(--gray-200);border-radius:8px">
+          <table style="width:100%;font-size:12px">
+            <thead id="import-preview-head" style="position:sticky;top:0;background:var(--gray-50)"></thead>
+            <tbody id="import-preview-body"></tbody>
+          </table>
+        </div>
+        <div id="import-result" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:600"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeImport()">Tutup</button>
+      <button class="btn btn-primary" id="import-submit-btn" style="display:none" onclick="submitImport()">📥 Import <span id="import-submit-count"></span> Data</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
