@@ -893,8 +893,8 @@
           <p>Data induk seluruh bahan baku, bahan tambahan pangan, dan bahan kemasan</p>
         </div>
         <div style="display:flex;gap:10px">
-          <button class="btn btn-secondary">⬇ Export</button>
-          <button class="btn btn-primary">+ Tambah Bahan</button>
+          <button class="btn btn-secondary" onclick="exportBahanCSV()">⬇ Export</button>
+          <button class="btn btn-primary" onclick="openBahanModal()">+ Tambah Bahan</button>
         </div>
       </div>
 
@@ -1321,7 +1321,7 @@
           <h1>📦 Master Produk Jadi</h1>
           <p>Data induk SKU produk herbal siap jual</p>
         </div>
-        <button class="btn btn-primary">+ Tambah SKU</button>
+        <button class="btn btn-primary" onclick="openProdukModal()">+ Tambah SKU</button>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px">
@@ -1412,50 +1412,47 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Tanggal Produksi *</label>
-              <input type="date" value="2026-05-06">
-            </div>
-            <div class="form-group">
-              <label>Nama Jenis Produk *</label>
-              <select>
-                <option>Lancar Teh Herbal Box 20</option>
-                <option>Lancar Teh Herbal Box 10</option>
-              </select>
+              <input type="date" id="inp-tanggal-produksi">
             </div>
             <div class="form-group">
               <label>SKU *</label>
-              <select>
-                <option>LCR-20</option>
-                <option>LCR-10</option>
+              <select id="inp-sku-produksi" onchange="updateProdukNama(this.value)">
+                <option value="LCR-20">LCR-20 · Lancar Teh Herbal Box 20</option>
+                <option value="LCR-10">LCR-10 · Lancar Teh Herbal Box 10</option>
               </select>
             </div>
             <div class="form-group">
               <label>Jumlah (BOX) *</label>
-              <input type="number" placeholder="500">
+              <input type="number" id="inp-jumlah-produksi" placeholder="500" min="1">
             </div>
             <div class="form-group">
-              <label>Kode Produksi *</label>
-              <input type="text" placeholder="LCR-20/26050001">
-              <div class="hint">Format: SKU/YYMMBBB (otomatis jika dikosongkan)</div>
+              <label>Kode Produksi</label>
+              <input type="text" id="inp-kode-produksi" placeholder="Otomatis jika dikosongkan">
+              <div class="hint">Format: SKU/YYMMBBB</div>
             </div>
             <div class="form-group">
-              <label>Tanggal Kadaluarsa *</label>
-              <input type="date">
+              <label>Tanggal Kadaluarsa</label>
+              <input type="date" id="inp-kadaluarsa-produksi">
             </div>
             <div class="form-group">
-              <label>Monitoring Kualitas *</label>
-              <select>
-                <option>✓ Memenuhi Syarat (MS)</option>
-                <option>✗ Tidak Memenuhi Syarat (TMS)</option>
+              <label>Operator</label>
+              <input type="text" id="inp-operator-produksi" placeholder="Tim Produksi 1">
+            </div>
+            <div class="form-group">
+              <label>Monitoring Kualitas</label>
+              <select id="inp-qc-produksi">
+                <option value="MS">✓ Memenuhi Syarat (MS)</option>
+                <option value="TMS">✗ Tidak Memenuhi Syarat (TMS)</option>
               </select>
             </div>
             <div class="form-group">
               <label>Tindakan Koreksi</label>
-              <input type="text" placeholder="— (isi jika TMS)">
+              <input type="text" id="inp-tindakan-produksi" placeholder="— (isi jika TMS)">
             </div>
           </div>
           <div class="form-actions">
-            <button class="btn btn-secondary">Batal</button>
-            <button class="btn btn-primary">💾 Simpan Produksi</button>
+            <button class="btn btn-secondary" onclick="resetFormProduksi()">Batal</button>
+            <button class="btn btn-primary" onclick="saveProduksi()">💾 Simpan Produksi</button>
           </div>
         </div>
       </div>
@@ -2573,6 +2570,52 @@
       </div>
     </div>
 
+    <!-- MODAL: Tambah Bahan -->
+    <div class="modal-backdrop" id="bahan-modal" onclick="closeBahanModal()">
+      <div class="modal" style="max-width:520px" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <div><div class="title" id="bahan-modal-title">+ Tambah Bahan</div></div>
+          <button class="modal-close" onclick="closeBahanModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="bahan-edit-id">
+          <div class="form-grid">
+            <div class="form-group"><label>Kode Bahan *</label><input type="text" id="bahan-kode" placeholder="JHE"></div>
+            <div class="form-group"><label>Nama Bahan *</label><input type="text" id="bahan-nama" placeholder="Jahe"></div>
+            <div class="form-group"><label>Satuan</label><input type="text" id="bahan-satuan" placeholder="gram / pcs / kg"></div>
+            <div class="form-group"><label>Harga Satuan (Rp)</label><input type="number" id="bahan-harga" placeholder="0" min="0"></div>
+            <div class="form-group"><label>Stok Awal</label><input type="number" id="bahan-stok" placeholder="0" min="0"></div>
+            <div class="form-group"><label>Stok Minimum</label><input type="number" id="bahan-stok-min" placeholder="0" min="0"></div>
+            <div class="form-group"><label>Kategori</label><input type="text" id="bahan-kategori" placeholder="bahan baku / kemasan"></div>
+            <div class="form-group"><label>Keterangan</label><input type="text" id="bahan-keterangan" placeholder="Opsional"></div>
+          </div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-secondary" onclick="closeBahanModal()">Batal</button><button class="btn btn-primary" onclick="saveBahan()">💾 Simpan</button></div>
+      </div>
+    </div>
+
+    <!-- MODAL: Tambah Produk -->
+    <div class="modal-backdrop" id="produk-modal" onclick="closeProdukModal()">
+      <div class="modal" style="max-width:520px" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <div><div class="title">+ Tambah SKU Produk</div></div>
+          <button class="modal-close" onclick="closeProdukModal()">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group"><label>Kode SKU *</label><input type="text" id="produk-kode" placeholder="LCR-30"></div>
+            <div class="form-group"><label>Nama Produk *</label><input type="text" id="produk-nama" placeholder="Lancar Teh Herbal Box 30"></div>
+            <div class="form-group"><label>Satuan</label><input type="text" id="produk-satuan" placeholder="BOX"></div>
+            <div class="form-group"><label>Harga Jual (Rp)</label><input type="number" id="produk-harga-jual" placeholder="0" min="0"></div>
+            <div class="form-group"><label>HPP (Rp)</label><input type="number" id="produk-hpp" placeholder="0" min="0"></div>
+            <div class="form-group"><label>No. Izin Edar</label><input type="text" id="produk-izin" placeholder="P-IRT / BPOM MD"></div>
+            <div class="form-group"><label>Keterangan</label><input type="text" id="produk-keterangan" placeholder="Opsional"></div>
+          </div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-secondary" onclick="closeProdukModal()">Batal</button><button class="btn btn-primary" onclick="saveProduk()">💾 Simpan</button></div>
+      </div>
+    </div>
+
     <!-- MODAL: Tambah/Edit User -->
     <div class="modal-backdrop" id="user-modal">
       <div class="modal" style="max-width:480px">
@@ -3071,6 +3114,106 @@ async function loadPenerimaan() {
       <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="hapusSatu('/api/penerimaan',${p.id},loadPenerimaan)">🗑</button></td>
     </tr>`).join('');
   } catch(e) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+
+// ── MASTER BAHAN MODAL ──
+function openBahanModal(id) {
+  ['bahan-kode','bahan-nama','bahan-satuan','bahan-harga','bahan-stok','bahan-stok-min','bahan-kategori','bahan-keterangan'].forEach(i => { const el=document.getElementById(i); if(el) el.value=''; });
+  document.getElementById('bahan-edit-id').value = id || '';
+  document.getElementById('bahan-modal-title').textContent = id ? '✏ Edit Bahan' : '+ Tambah Bahan';
+  document.getElementById('bahan-modal').classList.add('open');
+}
+function closeBahanModal() { document.getElementById('bahan-modal').classList.remove('open'); }
+async function saveBahan() {
+  const token = localStorage.getItem('lancar_token');
+  const kode = document.getElementById('bahan-kode').value.trim();
+  const nama = document.getElementById('bahan-nama').value.trim();
+  if (!kode || !nama) { showToast('⚠️ Kode dan Nama wajib diisi'); return; }
+  const payload = { kode, nama,
+    satuan: document.getElementById('bahan-satuan').value||null,
+    harga_satuan: parseFloat(document.getElementById('bahan-harga').value)||0,
+    stok: parseFloat(document.getElementById('bahan-stok').value)||0,
+    stok_min: parseFloat(document.getElementById('bahan-stok-min').value)||0,
+    kategori: document.getElementById('bahan-kategori').value||null,
+    keterangan: document.getElementById('bahan-keterangan').value||null,
+  };
+  const editId = document.getElementById('bahan-edit-id').value;
+  const url = editId ? API+'/api/bahan/'+editId : API+'/api/bahan';
+  const method = editId ? 'PUT' : 'POST';
+  try {
+    const res = await fetch(url, { method, headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body:JSON.stringify(payload) });
+    if (!res.ok) { const e=await res.json(); showToast('❌ '+(e.detail||'Gagal simpan')); return; }
+    showToast('✅ Bahan berhasil disimpan'); closeBahanModal(); loadBahan();
+  } catch(e) { showToast('❌ Gagal terhubung ke server'); }
+}
+function exportBahanCSV() {
+  const token = localStorage.getItem('lancar_token');
+  fetch(API+'/api/bahan',{headers:{'Authorization':'Bearer '+token}}).then(r=>r.json()).then(data=>{
+    const header = ['Kode','Nama','Satuan','Stok','Stok Min','Harga Satuan','Kategori'];
+    const rows = data.map(b=>[b.kode,b.nama,b.satuan||'',b.stok,b.stok_min,b.harga_satuan,b.kategori||'']);
+    const csv = [header,...rows].map(r=>r.join(',')).join('\n');
+    const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+    a.download='master_bahan.csv'; a.click();
+  });
+}
+
+// ── MASTER PRODUK MODAL ──
+function openProdukModal() {
+  ['produk-kode','produk-nama','produk-satuan','produk-harga-jual','produk-hpp','produk-izin','produk-keterangan'].forEach(i=>{ const el=document.getElementById(i); if(el) el.value=''; });
+  document.getElementById('produk-modal').classList.add('open');
+}
+function closeProdukModal() { document.getElementById('produk-modal').classList.remove('open'); }
+async function saveProduk() {
+  const token = localStorage.getItem('lancar_token');
+  const kode = document.getElementById('produk-kode').value.trim();
+  const nama = document.getElementById('produk-nama').value.trim();
+  if (!kode || !nama) { showToast('⚠️ Kode dan Nama wajib diisi'); return; }
+  const payload = { kode, nama,
+    satuan: document.getElementById('produk-satuan').value||'BOX',
+    harga_jual: parseFloat(document.getElementById('produk-harga-jual').value)||0,
+    hpp: parseFloat(document.getElementById('produk-hpp').value)||0,
+    no_izin_edar: document.getElementById('produk-izin').value||null,
+    keterangan: document.getElementById('produk-keterangan').value||null,
+  };
+  try {
+    const res = await fetch(API+'/api/produk', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body:JSON.stringify(payload) });
+    if (!res.ok) { const e=await res.json(); showToast('❌ '+(e.detail||'Gagal simpan')); return; }
+    showToast('✅ SKU berhasil ditambahkan'); closeProdukModal();
+  } catch(e) { showToast('❌ Gagal terhubung ke server'); }
+}
+
+// ── LOG PRODUKSI FORM ──
+const PRODUK_MAP = {'LCR-20':'Lancar Teh Herbal Box 20','LCR-10':'Lancar Teh Herbal Box 10'};
+function updateProdukNama() {}
+function resetFormProduksi() {
+  ['inp-tanggal-produksi','inp-jumlah-produksi','inp-kode-produksi','inp-kadaluarsa-produksi','inp-operator-produksi','inp-tindakan-produksi'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+}
+async function saveProduksi() {
+  const token = localStorage.getItem('lancar_token');
+  const tanggal  = document.getElementById('inp-tanggal-produksi').value;
+  const sku      = document.getElementById('inp-sku-produksi').value;
+  const jumlah   = parseInt(document.getElementById('inp-jumlah-produksi').value);
+  if (!tanggal || !sku || !jumlah || jumlah <= 0) { showToast('⚠️ Tanggal, SKU, dan Jumlah wajib diisi'); return; }
+  const now = new Date(tanggal);
+  const yy = String(now.getFullYear()).slice(2);
+  const mm = String(now.getMonth()+1).padStart(2,'0');
+  const rnd = String(Math.floor(Math.random()*9000)+1000);
+  const kode_produksi = document.getElementById('inp-kode-produksi').value.trim() || (sku+'/'+yy+mm+rnd);
+  const payload = {
+    tanggal, kode_produksi,
+    produk_kode: sku, produk_nama: PRODUK_MAP[sku]||sku,
+    jumlah,
+    tgl_kadaluarsa: document.getElementById('inp-kadaluarsa-produksi').value||null,
+    operator: document.getElementById('inp-operator-produksi').value||null,
+    catatan: document.getElementById('inp-tindakan-produksi').value||null,
+  };
+  try {
+    const res = await fetch(API+'/api/produksi', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body:JSON.stringify(payload) });
+    if (!res.ok) { const e=await res.json(); showToast('❌ '+(e.detail||'Gagal simpan')); return; }
+    showToast('✅ Produksi berhasil dicatat'); resetFormProduksi(); loadProduksi();
+  } catch(e) { showToast('❌ Gagal terhubung ke server'); }
 }
 
 // ── SAVE PENERIMAAN ──
