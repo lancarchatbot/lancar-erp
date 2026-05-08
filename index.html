@@ -856,10 +856,10 @@
       </div>
 
       <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
-        <div class="kpi-card green"><div class="kpi-label">Total Item</div><div class="kpi-value">9</div><div class="kpi-sub">Bahan & kemasan</div></div>
-        <div class="kpi-card gold"><div class="kpi-label">Total Nilai Stok</div><div class="kpi-value">Rp 12,09 Jt</div><div class="kpi-sub">Berdasarkan harga satuan</div></div>
-        <div class="kpi-card red"><div class="kpi-label">Stok Minus</div><div class="kpi-value">2 item</div><div class="kpi-sub">KTG & BOX-30</div></div>
-        <div class="kpi-card blue"><div class="kpi-label">Stok Nol</div><div class="kpi-value">2 item</div><div class="kpi-sub">LBL & SP-50</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Total Item</div><div class="kpi-value" id="bahan-kpi-total">—</div><div class="kpi-sub" id="bahan-kpi-sub">Bahan & kemasan</div></div>
+        <div class="kpi-card gold"><div class="kpi-label">Total Nilai Stok</div><div class="kpi-value" id="bahan-kpi-nilai">—</div><div class="kpi-sub">Berdasarkan harga satuan</div></div>
+        <div class="kpi-card red"><div class="kpi-label">Stok Minus</div><div class="kpi-value" id="bahan-kpi-minus">—</div><div class="kpi-sub" id="bahan-kpi-minus-sub">—</div></div>
+        <div class="kpi-card blue"><div class="kpi-label">Stok Nol</div><div class="kpi-value" id="bahan-kpi-nol">—</div><div class="kpi-sub" id="bahan-kpi-nol-sub">—</div></div>
       </div>
 
       <div class="card">
@@ -3033,6 +3033,17 @@ async function loadBahan() {
     const data = await res.json();
     if (!data.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data</td></tr>'; return; }
     data.forEach(b => { _bahanCache[b.id] = b; });
+    // Update KPI cards
+    const totalNilaiBahan = data.reduce((s, b) => s + (b.stok * b.harga_satuan), 0);
+    const minus = data.filter(b => b.stok < 0);
+    const nol = data.filter(b => b.stok === 0);
+    const el = (id) => document.getElementById(id);
+    if (el('bahan-kpi-total')) el('bahan-kpi-total').textContent = data.length;
+    if (el('bahan-kpi-nilai')) el('bahan-kpi-nilai').textContent = fmtRp(totalNilaiBahan);
+    if (el('bahan-kpi-minus')) el('bahan-kpi-minus').textContent = minus.length + ' item';
+    if (el('bahan-kpi-minus-sub')) el('bahan-kpi-minus-sub').textContent = minus.map(b=>b.kode).slice(0,3).join(', ') || '—';
+    if (el('bahan-kpi-nol')) el('bahan-kpi-nol').textContent = nol.length + ' item';
+    if (el('bahan-kpi-nol-sub')) el('bahan-kpi-nol-sub').textContent = nol.map(b=>b.kode).slice(0,3).join(', ') || '—';
     tbody.innerHTML = data.map(b => {
       const nilai = (b.stok * b.harga_satuan);
       const stokClass = b.stok < 0 ? 'color:var(--red)' : b.stok === 0 ? 'color:var(--gold)' : '';
@@ -3800,16 +3811,22 @@ function showPage(id) {
   document.getElementById('topbar-sub').textContent = info.sub || '';
   localStorage.setItem('lancar_last_page', id);
   closeSidebar();
-  if (id === 'dashboard') loadDashboard();
-  if (id === 'manajemen-user') loadUsers();
-  if (id === 'master-bahan') loadBahan();
-  if (id === 'log-penerimaan') loadPenerimaan();
-  if (id === 'log-pengeluaran') loadKeluar();
-  if (id === 'log-produksi') loadProduksi();
-  if (id === 'log-penjualan') loadPenjualan();
-  if (id === 'pengeluaran-umum') loadPengeluaranUmum();
-  if (id === 'resep-bom') loadBOM();
+  const loaders = {
+    'dashboard': loadDashboard, 'manajemen-user': loadUsers, 'master-bahan': loadBahan,
+    'log-penerimaan': loadPenerimaan, 'log-pengeluaran': loadKeluar, 'log-produksi': loadProduksi,
+    'log-penjualan': loadPenjualan, 'pengeluaran-umum': loadPengeluaranUmum, 'resep-bom': loadBOM,
+  };
+  if (loaders[id]) loaders[id]();
   if (id === 'laporan-keuangan') initCharts(id);
+  // Retry jika tbody masih kosong setelah 800ms (jaring pengaman)
+  const tbodyId = { 'master-bahan':'bahan-tbody','log-penerimaan':'penerimaan-tbody','log-pengeluaran':'keluar-tbody',
+    'log-produksi':'produksi-tbody','log-penjualan':'penjualan-tbody','pengeluaran-umum':'pengeluaran-umum-tbody','resep-bom':'bom-tbody' }[id];
+  if (tbodyId && loaders[id]) {
+    setTimeout(() => {
+      const el = document.getElementById(tbodyId);
+      if (el && el.innerHTML.trim() === '') loaders[id]();
+    }, 800);
+  }
 }
 
 // ── CHARTS ──
