@@ -967,27 +967,34 @@
           <div class="form-grid-3">
             <div class="form-group">
               <label>Tanggal Pembelian *</label>
-              <input type="date" value="2026-05-06">
+              <input type="date" id="inp-tanggal-penerimaan">
             </div>
             <div class="form-group">
               <label>Kode Bahan *</label>
-              <select>
-                <option>— Pilih Bahan —</option>
-                <option>JHE · Jahe</option>
-                <option>KYT · Kunyit</option>
-                <option>KMN · Kayu Manis</option>
-                <option>KTM · Ketumbar</option>
-                <option>KLD · Kulit Delima</option>
-                <option>KTG · Kantung Teh</option>
-                <option>BOX-30 · Box Kemasan 30s</option>
-                <option>LBL · Label / Stiker</option>
-                <option>SP-50 · Standing Pouch</option>
+              <select id="inp-bahan-kode" onchange="autofillBahanNama(this.value)">
+                <option value="">— Pilih Bahan —</option>
+                <option value="JHE">JHE · Jahe</option>
+                <option value="KYT">KYT · Kunyit</option>
+                <option value="KMN">KMN · Kayu Manis</option>
+                <option value="KTM">KTM · Ketumbar</option>
+                <option value="KLD">KLD · Kulit Delima</option>
+                <option value="KTG">KTG · Kantung Teh</option>
+                <option value="BOX-30">BOX-30 · Box Kemasan 30s</option>
+                <option value="LBL">LBL · Label / Stiker</option>
+                <option value="SP-50">SP-50 · Standing Pouch</option>
               </select>
             </div>
             <div class="form-group">
-              <label>Jumlah (dengan satuan) *</label>
-              <input type="text" placeholder="Contoh: 50 KG">
-              <div class="hint">Masukkan dengan satuan, misal: 50 KG, 200 pcs</div>
+              <label>Jumlah *</label>
+              <input type="number" id="inp-jumlah-penerimaan" placeholder="Contoh: 50" min="0" step="any">
+            </div>
+            <div class="form-group">
+              <label>Satuan</label>
+              <input type="text" id="inp-satuan-penerimaan" placeholder="KG / gram / pcs / box">
+            </div>
+            <div class="form-group">
+              <label>Harga Satuan (Rp)</label>
+              <input type="number" id="inp-harga-penerimaan" placeholder="0" min="0">
             </div>
           </div>
 
@@ -1045,24 +1052,24 @@
           <div class="form-grid-3">
             <div class="form-group">
               <label>Tanggal Kadaluarsa *</label>
-              <input type="date">
+              <input type="date" id="inp-kadaluarsa-penerimaan">
             </div>
             <div class="form-group">
               <label>Monitoring Kualitas *</label>
-              <select>
-                <option>✓ Memenuhi Syarat (MS)</option>
-                <option>✗ Tidak Memenuhi Syarat (TMS)</option>
+              <select id="inp-status-qc-penerimaan">
+                <option value="MS">✓ Memenuhi Syarat (MS)</option>
+                <option value="TMS">✗ Tidak Memenuhi Syarat (TMS)</option>
               </select>
             </div>
             <div class="form-group">
               <label>Tindakan Koreksi</label>
-              <input type="text" placeholder="— (isi jika TMS)">
+              <input type="text" id="inp-tindakan-penerimaan" placeholder="— (isi jika TMS)">
             </div>
           </div>
 
           <div class="form-actions">
-            <button class="btn btn-secondary">Batal</button>
-            <button class="btn btn-primary">💾 Simpan Penerimaan</button>
+            <button class="btn btn-secondary" onclick="resetFormPenerimaan()">Batal</button>
+            <button class="btn btn-primary" onclick="savePenerimaan()">💾 Simpan Penerimaan</button>
           </div>
         </div>
       </div>
@@ -3072,6 +3079,58 @@ async function loadPenerimaan() {
       <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="hapusSatu('/api/penerimaan',${p.id},loadPenerimaan)">🗑</button></td>
     </tr>`).join('');
   } catch(e) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+
+// ── SAVE PENERIMAAN ──
+const BAHAN_NAMA_MAP = {
+  'JHE':'Jahe','KYT':'Kunyit','KMN':'Kayu Manis','KTM':'Ketumbar',
+  'KLD':'Kulit Delima','KTG':'Kantung Teh','BOX-30':'Box Kemasan 30s',
+  'LBL':'Label / Stiker','SP-50':'Standing Pouch'
+};
+function autofillBahanNama() {}
+async function savePenerimaan() {
+  const token = localStorage.getItem('lancar_token');
+  const bahan_kode = document.getElementById('inp-bahan-kode').value;
+  const tanggal    = document.getElementById('inp-tanggal-penerimaan').value;
+  const jumlah     = parseFloat(document.getElementById('inp-jumlah-penerimaan').value);
+  if (!bahan_kode || !tanggal || isNaN(jumlah) || jumlah <= 0) {
+    showToast('⚠️ Tanggal, Kode Bahan, dan Jumlah wajib diisi'); return;
+  }
+  const payload = {
+    tanggal,
+    bahan_kode,
+    bahan_nama: BAHAN_NAMA_MAP[bahan_kode] || bahan_kode,
+    jumlah,
+    satuan:      document.getElementById('inp-satuan-penerimaan').value || null,
+    harga_satuan: parseFloat(document.getElementById('inp-harga-penerimaan').value) || null,
+    pemasok:     document.getElementById('inp-pemasok').value || null,
+    no_pirt:     document.getElementById('inp-pirt').value || null,
+    no_bpom_md:  document.getElementById('inp-bpommd').value || null,
+    no_bpom_ml:  document.getElementById('inp-bpomml').value || null,
+    tgl_kadaluarsa: document.getElementById('inp-kadaluarsa-penerimaan').value || null,
+    status_qc:   document.getElementById('inp-status-qc-penerimaan').value,
+    tindakan_koreksi: document.getElementById('inp-tindakan-penerimaan').value || null,
+  };
+  try {
+    const res = await fetch(API + '/api/penerimaan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) { const e = await res.json(); showToast('❌ Error: ' + (e.detail||'Gagal simpan')); return; }
+    showToast('✅ Penerimaan berhasil disimpan');
+    resetFormPenerimaan();
+    loadPenerimaan();
+  } catch(e) { showToast('❌ Gagal terhubung ke server'); }
+}
+function resetFormPenerimaan() {
+  ['inp-tanggal-penerimaan','inp-jumlah-penerimaan','inp-satuan-penerimaan',
+   'inp-harga-penerimaan','inp-pemasok','inp-pirt','inp-bpommd','inp-bpomml',
+   'inp-halal','inp-kadaluarsa-penerimaan','inp-tindakan-penerimaan'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  const sel = document.getElementById('inp-bahan-kode'); if (sel) sel.value = '';
+  const qc  = document.getElementById('inp-status-qc-penerimaan'); if (qc) qc.value = 'MS';
 }
 
 // ── LOAD LOG PENGELUARAN BAHAN ──

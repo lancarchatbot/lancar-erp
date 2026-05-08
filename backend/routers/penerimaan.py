@@ -23,6 +23,7 @@ class PenerimaanCreate(BaseModel):
     no_pirt: Optional[str] = None
     no_bpom_md: Optional[str] = None
     no_bpom_ml: Optional[str] = None
+    no_halal: Optional[str] = None
     metode_bayar: Optional[str] = None
 
 class QCUpdate(BaseModel):

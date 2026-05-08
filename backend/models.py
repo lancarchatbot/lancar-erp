@@ -53,6 +53,7 @@ class LogPenerimaan(Base):
     no_pirt      = Column(String(100))
     no_bpom_md   = Column(String(100))
     no_bpom_ml   = Column(String(100))
+    no_halal     = Column(String(200))
     status_bayar = Column(String(20), default="belum")
     status_qc    = Column(String(10), default="PENDING")
     catatan_qc   = Column(Text)
