@@ -647,47 +647,47 @@
       <div class="kpi-grid">
         <div class="kpi-card green">
           <div class="kpi-label">Total Nilai Stok Bahan</div>
-          <div class="kpi-value">Rp 12,09 Jt</div>
-          <div class="kpi-sub">9 item bahan & kemasan</div>
+          <div class="kpi-value" id="dash-nilai-stok">—</div>
+          <div class="kpi-sub" id="dash-jml-bahan">—</div>
         </div>
         <div class="kpi-card gold">
           <div class="kpi-label">Total Produk Jadi</div>
-          <div class="kpi-value">1.800 pcs</div>
-          <div class="kpi-sub">2 SKU aktif</div>
+          <div class="kpi-value" id="dash-total-produk">—</div>
+          <div class="kpi-sub" id="dash-sub-produk">—</div>
         </div>
         <div class="kpi-card red">
           <div class="kpi-label">Bahan Stok Kritis</div>
-          <div class="kpi-value">3 item</div>
+          <div class="kpi-value" id="dash-stok-kritis">—</div>
           <div class="kpi-sub">Di bawah stok minimum</div>
         </div>
         <div class="kpi-card blue">
           <div class="kpi-label">Batch Produksi (Bulan Ini)</div>
-          <div class="kpi-value">3 batch</div>
-          <div class="kpi-sub">1.800 unit diproduksi</div>
+          <div class="kpi-value" id="dash-batch">—</div>
+          <div class="kpi-sub" id="dash-sub-batch">—</div>
         </div>
       </div>
 
       <!-- Financial KPIs -->
       <div class="kpi-grid" style="margin-bottom:24px">
         <div class="kpi-card green">
-          <div class="kpi-label">Total Penjualan (Mei 2026)</div>
-          <div class="kpi-value">Rp 48,5 Jt</div>
-          <div class="kpi-sub">Shopee + TikTok + WA</div>
+          <div class="kpi-label" id="dash-label-jual">Total Penjualan</div>
+          <div class="kpi-value" id="dash-total-jual">—</div>
+          <div class="kpi-sub">Semua channel</div>
         </div>
         <div class="kpi-card red">
-          <div class="kpi-label">Total Pengeluaran (Mei 2026)</div>
-          <div class="kpi-value">Rp 31,2 Jt</div>
-          <div class="kpi-sub">BUY + GP + ADS + TOOL + dll</div>
+          <div class="kpi-label" id="dash-label-keluar">Total Pengeluaran</div>
+          <div class="kpi-value" id="dash-total-keluar">—</div>
+          <div class="kpi-sub">Semua kategori</div>
         </div>
         <div class="kpi-card blue">
-          <div class="kpi-label">Laba Bersih (Mei 2026)</div>
-          <div class="kpi-value">Rp 17,3 Jt</div>
-          <div class="kpi-sub">Margin 35,7%</div>
+          <div class="kpi-label" id="dash-label-laba">Laba Bersih</div>
+          <div class="kpi-value" id="dash-laba">—</div>
+          <div class="kpi-sub" id="dash-sub-laba">—</div>
         </div>
         <div class="kpi-card gold">
           <div class="kpi-label">Saldo Kas & Bank</div>
-          <div class="kpi-value">Rp 84,2 Jt</div>
-          <div class="kpi-sub">Per hari ini</div>
+          <div class="kpi-value" id="dash-saldo">—</div>
+          <div class="kpi-sub">Penerimaan − Pengeluaran</div>
         </div>
       </div>
 
@@ -718,53 +718,10 @@
         <div class="card">
           <div class="card-header">
             <span class="card-title">⚠️ Bahan Stok Kritis</span>
-            <span class="badge badge-red">4 item MINUS</span>
+            <span class="badge badge-red" id="dash-kritis-badge">—</span>
           </div>
-          <div class="card-body">
-            <div class="alert alert-danger">
-              <span>🔴</span>
-              <span>4 bahan berada dalam kondisi MINUS (pemakaian melebihi penerimaan). Segera cek data log.</span>
-            </div>
-            <div class="stock-row">
-              <div>
-                <div class="stock-name">Kantung Teh <span class="stock-code">KTG</span></div>
-                <div class="progress-wrap" style="width:160px;margin-top:4px"><div class="progress-bar" style="width:0%;background:var(--red)"></div></div>
-              </div>
-              <div class="stock-nums">
-                <div style="color:var(--red);font-weight:700">−26.000 pcs</div>
-                <div class="badge badge-red" style="margin-top:4px">MINUS</div>
-              </div>
-            </div>
-            <div class="stock-row">
-              <div>
-                <div class="stock-name">Box Kemasan 30s <span class="stock-code">BOX-30</span></div>
-                <div class="progress-wrap" style="width:160px;margin-top:4px"><div class="progress-bar" style="width:0%;background:var(--red)"></div></div>
-              </div>
-              <div class="stock-nums">
-                <div style="color:var(--red);font-weight:700">−1.800 pcs</div>
-                <div class="badge badge-red" style="margin-top:4px">MINUS</div>
-              </div>
-            </div>
-            <div class="stock-row">
-              <div>
-                <div class="stock-name">Kunyit <span class="stock-code">KYT</span></div>
-                <div class="progress-wrap" style="width:160px;margin-top:4px"><div class="progress-bar" style="width:0%;background:var(--red)"></div></div>
-              </div>
-              <div class="stock-nums">
-                <div style="color:var(--red);font-weight:700">−7.000 gram</div>
-                <div class="badge badge-red" style="margin-top:4px">MINUS</div>
-              </div>
-            </div>
-            <div class="stock-row">
-              <div>
-                <div class="stock-name">Label / Stiker <span class="stock-code">LBL</span></div>
-                <div class="progress-wrap" style="width:160px;margin-top:4px"><div class="progress-bar" style="width:0%;background:var(--red)"></div></div>
-              </div>
-              <div class="stock-nums">
-                <div style="color:var(--red);font-weight:700">−1.800 pcs</div>
-                <div class="badge badge-red" style="margin-top:4px">MINUS</div>
-              </div>
-            </div>
+          <div class="card-body" id="dash-kritis-body">
+            <div style="text-align:center;color:var(--gray-400);padding:20px">Memuat...</div>
           </div>
         </div>
 
@@ -3098,6 +3055,99 @@ async function loadBahan() {
   } catch(e) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
 }
 
+// ── LOAD DASHBOARD ──
+function fmtRp(v) {
+  if (v >= 1e9) return 'Rp ' + (v/1e9).toFixed(1).replace('.',',') + ' M';
+  if (v >= 1e6) return 'Rp ' + (v/1e6).toFixed(1).replace('.',',') + ' Jt';
+  if (v >= 1e3) return 'Rp ' + (v/1e3).toFixed(0) + ' Rb';
+  return 'Rp ' + Math.round(v).toLocaleString('id');
+}
+async function loadDashboard() {
+  const token = localStorage.getItem('lancar_token');
+  const now = new Date();
+  const bulan = now.getMonth() + 1;
+  const tahun = now.getFullYear();
+  const namaBulan = ['','Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'][bulan];
+
+  try {
+    const [resBahan, resProduksi, resRingkasan, resProduk] = await Promise.all([
+      fetch(API + '/api/bahan', { headers: { 'Authorization': 'Bearer ' + token } }),
+      fetch(API + '/api/produksi', { headers: { 'Authorization': 'Bearer ' + token } }),
+      fetch(API + '/api/keuangan/ringkasan?bulan=' + bulan + '&tahun=' + tahun, { headers: { 'Authorization': 'Bearer ' + token } }),
+      fetch(API + '/api/produk', { headers: { 'Authorization': 'Bearer ' + token } }),
+    ]);
+    const bahan = resBahan.ok ? await resBahan.json() : [];
+    const produksi = resProduksi.ok ? await resProduksi.json() : [];
+    const ringkasan = resRingkasan.ok ? await resRingkasan.json() : {};
+    const produk = resProduk.ok ? await resProduk.json() : [];
+
+    // KPI stok bahan
+    const totalNilai = bahan.reduce((s, b) => s + (b.stok * b.harga_satuan), 0);
+    const kritis = bahan.filter(b => b.stok < b.stok_min);
+    const minus = bahan.filter(b => b.stok < 0);
+    document.getElementById('dash-nilai-stok').textContent = fmtRp(totalNilai);
+    document.getElementById('dash-jml-bahan').textContent = bahan.length + ' item bahan & kemasan';
+    document.getElementById('dash-stok-kritis').textContent = kritis.length + ' item';
+
+    // KPI produk jadi
+    const totalPcs = produk.reduce((s, p) => s + (p.stok || 0), 0);
+    const skuAktif = produk.filter(p => p.stok > 0).length;
+    document.getElementById('dash-total-produk').textContent = totalPcs.toLocaleString('id') + ' pcs';
+    document.getElementById('dash-sub-produk').textContent = skuAktif + ' SKU aktif';
+
+    // KPI batch produksi bulan ini
+    const batchBulanIni = produksi.filter(p => {
+      const d = new Date(p.tanggal); return d.getMonth()+1===bulan && d.getFullYear()===tahun;
+    });
+    const totalUnitBulanIni = batchBulanIni.reduce((s, p) => s + (p.jumlah || 0), 0);
+    document.getElementById('dash-batch').textContent = batchBulanIni.length + ' batch';
+    document.getElementById('dash-sub-batch').textContent = totalUnitBulanIni.toLocaleString('id') + ' unit diproduksi';
+
+    // KPI keuangan
+    const totalJual = ringkasan.total_penerimaan || 0;
+    const totalKeluar = ringkasan.total_pengeluaran || 0;
+    const laba = ringkasan.laba_bersih || 0;
+    const margin = ringkasan.margin || 0;
+    document.getElementById('dash-label-jual').textContent = 'Total Penjualan (' + namaBulan + ' ' + tahun + ')';
+    document.getElementById('dash-total-jual').textContent = fmtRp(totalJual);
+    document.getElementById('dash-label-keluar').textContent = 'Total Pengeluaran (' + namaBulan + ' ' + tahun + ')';
+    document.getElementById('dash-total-keluar').textContent = fmtRp(totalKeluar);
+    document.getElementById('dash-label-laba').textContent = 'Laba Bersih (' + namaBulan + ' ' + tahun + ')';
+    document.getElementById('dash-laba').textContent = fmtRp(laba);
+    document.getElementById('dash-sub-laba').textContent = 'Margin ' + margin + '%';
+    document.getElementById('dash-saldo').textContent = fmtRp(totalJual - totalKeluar);
+
+    // Stok kritis panel
+    const kritisPanel = document.getElementById('dash-kritis-body');
+    const kritisBadge = document.getElementById('dash-kritis-badge');
+    kritisBadge.textContent = kritis.length + ' item';
+    if (kritis.length === 0) {
+      kritisPanel.innerHTML = '<div class="alert alert-success">✅ Semua bahan stok aman.</div>';
+    } else {
+      const maxStok = Math.max(...kritis.map(b => b.stok_min), 1);
+      kritisPanel.innerHTML = (minus.length > 0 ? `<div class="alert alert-danger"><span>🔴</span><span>${minus.length} bahan kondisi MINUS. Segera cek log.</span></div>` : '') +
+        kritis.map(b => {
+          const pct = Math.max(0, Math.min(100, b.stok_min > 0 ? (b.stok / b.stok_min * 100) : 0));
+          const color = b.stok < 0 ? 'var(--red)' : 'var(--gold)';
+          const badge = b.stok < 0 ? '<span class="badge badge-red">MINUS</span>' : '<span class="badge badge-gold">KRITIS</span>';
+          return `<div class="stock-row"><div><div class="stock-name">${b.nama} <span class="stock-code">${b.kode}</span></div><div class="progress-wrap" style="width:140px;margin-top:4px"><div class="progress-bar" style="width:${pct}%;background:${color}"></div></div></div><div class="stock-nums"><div style="color:${color};font-weight:700">${b.stok.toLocaleString('id')} ${b.satuan||''}</div>${badge}</div></div>`;
+        }).join('');
+    }
+
+    // Charts
+    const chartLabels = bahan.slice(0, 8).map(b => b.kode);
+    const chartNilai = bahan.slice(0, 8).map(b => b.stok * b.harga_satuan);
+    const batchLabels = batchBulanIni.slice(0, 8).map(p => p.kode_produksi || p.produk_kode);
+    const batchData = batchBulanIni.slice(0, 8).map(p => p.jumlah);
+
+    if (chartInstances['chartStok']) { chartInstances['chartStok'].destroy(); delete chartInstances['chartStok']; }
+    if (chartInstances['chartProduksi']) { chartInstances['chartProduksi'].destroy(); delete chartInstances['chartProduksi']; }
+    initCharts('dashboard', chartLabels, chartNilai, batchLabels, batchData);
+  } catch(e) {
+    console.error('loadDashboard error:', e);
+  }
+}
+
 // ── LOAD LOG PENERIMAAN ──
 async function loadPenerimaan() {
   const token = localStorage.getItem('lancar_token');
@@ -3751,6 +3801,7 @@ function showPage(id) {
   document.getElementById('topbar-sub').textContent = info.sub || '';
   localStorage.setItem('lancar_last_page', id);
   closeSidebar();
+  if (id === 'dashboard') loadDashboard();
   if (id === 'manajemen-user') loadUsers();
   if (id === 'master-bahan') loadBahan();
   if (id === 'log-penerimaan') loadPenerimaan();
@@ -3759,45 +3810,37 @@ function showPage(id) {
   if (id === 'log-penjualan') loadPenjualan();
   if (id === 'pengeluaran-umum') loadPengeluaranUmum();
   if (id === 'resep-bom') loadBOM();
-  initCharts(id);
 }
 
 // ── CHARTS ──
 const chartInstances = {};
-function initCharts(page) {
+function initCharts(page, stokLabels, stokData, batchLabels, batchData) {
   if (page === 'dashboard') {
-    if (!chartInstances['chartStok']) {
-      chartInstances['chartStok'] = new Chart(document.getElementById('chartStok'), {
-        type: 'bar',
-        data: {
-          labels: ['Jahe', 'Kunyit', 'Kayu Manis', 'Ketumbar', 'Kulit Delima'],
-          datasets: [{
-            label: 'Nilai Stok (Rp)',
-            data: [2100000, 1620000, 1350000, 5720000, 4800000],
-            backgroundColor: ['#3aad6a','#2d8653','#1a5c38','#4ece85','#22a05e'],
-            borderRadius: 6,
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-          scales: { y: { ticks: { callback: v => 'Rp ' + (v/1000000).toFixed(1) + 'Jt' }, grid: { color: '#f0f0f0' } } } }
-      });
-    }
-    if (!chartInstances['chartProduksi']) {
-      chartInstances['chartProduksi'] = new Chart(document.getElementById('chartProduksi'), {
-        type: 'bar',
-        data: {
-          labels: ['15 Feb\nLCR-20', '20 Feb\nLCR-10', '25 Feb\nLCR-20'],
-          datasets: [{
-            label: 'Jumlah (BOX)',
-            data: [500, 1000, 300],
-            backgroundColor: ['#3aad6a','#2563eb','#3aad6a'],
-            borderRadius: 6,
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
-          scales: { y: { grid: { color: '#f0f0f0' } } } }
-      });
-    }
+    const sl = stokLabels || [];
+    const sd = stokData || [];
+    chartInstances['chartStok'] = new Chart(document.getElementById('chartStok'), {
+      type: 'bar',
+      data: {
+        labels: sl.length ? sl : ['—'],
+        datasets: [{ label: 'Nilai Stok (Rp)', data: sd.length ? sd : [0],
+          backgroundColor: ['#3aad6a','#2d8653','#1a5c38','#4ece85','#22a05e','#6ee7b7','#059669','#065f46'],
+          borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+        scales: { y: { ticks: { callback: v => v>=1e6?'Rp '+(v/1e6).toFixed(1)+'Jt':'Rp '+v }, grid: { color: '#f0f0f0' } } } }
+    });
+    const bl = batchLabels || [];
+    const bd = batchData || [];
+    chartInstances['chartProduksi'] = new Chart(document.getElementById('chartProduksi'), {
+      type: 'bar',
+      data: {
+        labels: bl.length ? bl : ['—'],
+        datasets: [{ label: 'Jumlah (pcs)', data: bd.length ? bd : [0],
+          backgroundColor: '#3aad6a', borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+        scales: { y: { grid: { color: '#f0f0f0' } } } }
+    });
   }
   if (page === 'dashboard') {
     if (!chartInstances['chartArusKas']) {
@@ -4640,8 +4683,7 @@ function downloadImportTemplate() {
 
 document.getElementById('import-modal').addEventListener('click', function(e) { if(e.target===this) closeImport(); });
 
-// Init dashboard charts on load
-setTimeout(() => initCharts('dashboard'), 100);
+// Init: dashboard charts dibuat di loadDashboard() saat halaman dibuka
 </script>
 
 <!-- MODAL IMPORT CSV -->
