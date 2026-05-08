@@ -931,7 +931,7 @@
               </tr>
             </thead>
             <tbody id="bahan-tbody">
-              <tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
+              
             </tbody>
           </table>
         </div>
@@ -1127,7 +1127,7 @@
               </tr>
             </thead>
             <tbody id="penerimaan-tbody">
-              <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
+              
             </tbody>
           </table>
         </div>
@@ -1307,7 +1307,7 @@
               <th>Tanggal</th><th>Batch Produksi</th><th>Kode</th><th>Nama Bahan</th><th style="text-align:right">Jumlah</th><th>Satuan</th><th>Catatan</th><th>Hapus</th>
             </tr></thead>
             <tbody id="keluar-tbody">
-              <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
+              
             </tbody>
           </table>
         </div>
@@ -1506,7 +1506,7 @@
               <th>Tanggal</th><th>Produk</th><th style="text-align:right">Jumlah</th><th>Kode Produksi</th><th>Kadaluarsa</th><th>QC</th><th>Pembayaran</th><th>Hapus</th>
             </tr></thead>
             <tbody id="produksi-tbody">
-              <tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
+              
             </tbody>
           </table>
         </div>
@@ -1715,7 +1715,7 @@
                 </tr>
               </thead>
               <tbody id="bom-tbody">
-                <tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
+                
               </tbody>
             </table>
           </div>
@@ -2137,7 +2137,7 @@
               </tr>
             </thead>
             <tbody id="jual-tbody">
-              <tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
+              
             </tbody>
           </table>
         </div>
@@ -2235,7 +2235,7 @@
               </tr>
             </thead>
             <tbody id="umum-tbody">
-              <tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
+              
             </tbody>
           </table>
         </div>
@@ -2535,7 +2535,7 @@
               <tr><th>Nama</th><th>Username</th><th>Role</th><th>Status</th><th>Aksi</th></tr>
             </thead>
             <tbody id="user-table-body">
-              <tr><td colspan="5" class="empty"><div class="ico">👥</div><p>Memuat data...</p></td></tr>
+              
             </tbody>
           </table>
         </div>
@@ -2917,8 +2917,12 @@ function applySession() {
   const hideCatat = ['produksi','admin-keuangan'];
   document.getElementById('btn-catat-penerimaan').style.display = hideCatat.includes(currentUser.role) ? 'none' : '';
 
-  // Arahkan ke dashboard
-  showPage('dashboard');
+  // Pulihkan halaman terakhir atau ke dashboard
+  const lastPage = localStorage.getItem('lancar_last_page');
+  const validPages = ['dashboard','master-bahan','log-penerimaan','log-pengeluaran','log-produksi',
+    'log-penjualan','pengeluaran-umum','resep-bom','kalkulasi-hpp','sisa-stok',
+    'manajemen-user','laporan-keuangan','master-produk'];
+  showPage(lastPage && validPages.includes(lastPage) ? lastPage : 'dashboard');
 }
 
 // ── USER MENU TOPBAR ──
@@ -3731,6 +3735,7 @@ function showPage(id) {
   const info = pages[id] || {};
   document.getElementById('topbar-title').textContent = info.title || id;
   document.getElementById('topbar-sub').textContent = info.sub || '';
+  localStorage.setItem('lancar_last_page', id);
   closeSidebar();
   setTimeout(() => {
     if (id === 'manajemen-user') loadUsers();
