@@ -1237,35 +1237,27 @@
         <div class="card-body">
           <div class="form-grid-3">
             <div class="form-group">
-              <label>Tanggal *</label><input type="date" value="2026-05-06">
+              <label>Tanggal *</label><input type="date" id="inp-tanggal-keluar">
             </div>
             <div class="form-group">
               <label>Kode Batch Produksi *</label>
-              <input type="text" placeholder="BATCH-LCR-002">
+              <input type="text" id="inp-batch-keluar" placeholder="BATCH-LCR-002">
             </div>
             <div class="form-group">
-              <label>Operator *</label>
-              <select><option>Tim Produksi 1</option><option>Tim Produksi 2</option><option>Tim Packing</option></select>
+              <label>Operator</label>
+              <select id="inp-operator-keluar"><option value="Tim Produksi 1">Tim Produksi 1</option><option value="Tim Produksi 2">Tim Produksi 2</option><option value="Tim Packing">Tim Packing</option></select>
             </div>
           </div>
           <div class="form-section-title">🌿 Bahan yang Dikeluarkan</div>
-          <table style="margin-bottom:12px">
-            <thead><tr><th>Kode Bahan</th><th>Nama Bahan</th><th>Jumlah</th><th>Satuan</th><th>Catatan</th><th></th></tr></thead>
-            <tbody>
-              <tr>
-                <td><select style="border:1px solid var(--gray-200);padding:5px 8px;border-radius:6px;font-size:13px"><option>JHE</option></select></td>
-                <td>Jahe</td>
-                <td><input type="number" style="width:80px;border:1px solid var(--gray-200);padding:5px 8px;border-radius:6px;font-size:13px" value="18000"></td>
-                <td>gram</td>
-                <td><input type="text" style="width:200px;border:1px solid var(--gray-200);padding:5px 8px;border-radius:6px;font-size:13px" placeholder="Catatan..."></td>
-                <td><button class="btn btn-danger" style="padding:4px 8px;font-size:12px">✕</button></td>
-              </tr>
+          <table style="margin-bottom:12px" id="keluar-baris-table">
+            <thead><tr><th>Kode Bahan</th><th>Jumlah</th><th>Satuan</th><th>Catatan</th><th></th></tr></thead>
+            <tbody id="keluar-baris-tbody">
             </tbody>
           </table>
-          <button class="btn btn-secondary" style="font-size:12px">+ Tambah Baris</button>
+          <button class="btn btn-secondary" style="font-size:12px" onclick="tambahBarisKeluar()">+ Tambah Baris</button>
           <div class="form-actions">
-            <button class="btn btn-secondary">Batal</button>
-            <button class="btn btn-primary">💾 Simpan Pengeluaran</button>
+            <button class="btn btn-secondary" onclick="resetFormKeluar()">Batal</button>
+            <button class="btn btn-primary" onclick="savePengeluaranBahan()">💾 Simpan Pengeluaran</button>
           </div>
         </div>
       </div>
@@ -3131,6 +3123,66 @@ function resetFormPenerimaan() {
   });
   const sel = document.getElementById('inp-bahan-kode'); if (sel) sel.value = '';
   const qc  = document.getElementById('inp-status-qc-penerimaan'); if (qc) qc.value = 'MS';
+}
+
+// ── FORM PENGELUARAN BAHAN ──
+const BAHAN_OPTIONS = [
+  {kode:'JHE',nama:'Jahe',satuan:'gram'},{kode:'KYT',nama:'Kunyit',satuan:'gram'},
+  {kode:'KMN',nama:'Kayu Manis',satuan:'gram'},{kode:'KTM',nama:'Ketumbar',satuan:'gram'},
+  {kode:'KLD',nama:'Kulit Delima',satuan:'gram'},{kode:'KTG',nama:'Kantung Teh',satuan:'pcs'},
+  {kode:'BOX-30',nama:'Box Kemasan 30s',satuan:'pcs'},{kode:'LBL',nama:'Label / Stiker',satuan:'pcs'},
+  {kode:'SP-50',nama:'Standing Pouch',satuan:'pcs'},
+];
+function tambahBarisKeluar() {
+  const tbody = document.getElementById('keluar-baris-tbody');
+  const idx = tbody.children.length;
+  const opts = BAHAN_OPTIONS.map(b => `<option value="${b.kode}" data-satuan="${b.satuan}">${b.kode} · ${b.nama}</option>`).join('');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><select style="border:1px solid var(--gray-200);padding:5px 8px;border-radius:6px;font-size:13px" class="keluar-kode-select" onchange="updateSatuanKeluar(this)">${opts}</select></td>
+    <td><input type="number" class="keluar-jumlah" style="width:90px;border:1px solid var(--gray-200);padding:5px 8px;border-radius:6px;font-size:13px" placeholder="0" min="0"></td>
+    <td><input type="text" class="keluar-satuan" style="width:70px;border:1px solid var(--gray-200);padding:5px 8px;border-radius:6px;font-size:13px" value="${BAHAN_OPTIONS[0].satuan}"></td>
+    <td><input type="text" class="keluar-catatan" style="width:180px;border:1px solid var(--gray-200);padding:5px 8px;border-radius:6px;font-size:13px" placeholder="Catatan..."></td>
+    <td><button class="btn btn-danger" style="padding:4px 8px;font-size:12px" onclick="this.closest('tr').remove()">✕</button></td>`;
+  tbody.appendChild(tr);
+}
+function updateSatuanKeluar(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  const satuan = opt.dataset.satuan || '';
+  sel.closest('tr').querySelector('.keluar-satuan').value = satuan;
+}
+function resetFormKeluar() {
+  document.getElementById('inp-tanggal-keluar').value = '';
+  document.getElementById('inp-batch-keluar').value = '';
+  document.getElementById('keluar-baris-tbody').innerHTML = '';
+}
+async function savePengeluaranBahan() {
+  const token = localStorage.getItem('lancar_token');
+  const tanggal = document.getElementById('inp-tanggal-keluar').value;
+  const batch   = document.getElementById('inp-batch-keluar').value.trim();
+  const operator = document.getElementById('inp-operator-keluar').value;
+  if (!tanggal || !batch) { showToast('⚠️ Tanggal dan Kode Batch wajib diisi'); return; }
+  const rows = document.querySelectorAll('#keluar-baris-tbody tr');
+  if (!rows.length) { showToast('⚠️ Tambahkan minimal 1 bahan'); return; }
+  let ok = 0, errors = [];
+  for (const row of rows) {
+    const bahan_kode = row.querySelector('.keluar-kode-select').value;
+    const jumlah = parseFloat(row.querySelector('.keluar-jumlah').value);
+    const satuan = row.querySelector('.keluar-satuan').value;
+    const catatan = row.querySelector('.keluar-catatan').value;
+    if (!jumlah || jumlah <= 0) { errors.push(bahan_kode + ': jumlah kosong'); continue; }
+    const bahan = BAHAN_OPTIONS.find(b => b.kode === bahan_kode);
+    try {
+      const res = await fetch(API + '/api/keluar', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+        body: JSON.stringify({tanggal, bahan_kode, bahan_nama: bahan?.nama||bahan_kode, jumlah, satuan, no_batch_produksi: batch, catatan: catatan||null, tujuan: operator})
+      });
+      if (res.ok) ok++; else errors.push(bahan_kode + ': gagal');
+    } catch(e) { errors.push(bahan_kode + ': error'); }
+  }
+  if (ok > 0) { showToast('✅ ' + ok + ' bahan berhasil disimpan'); resetFormKeluar(); loadKeluar(); }
+  if (errors.length) showToast('⚠️ Error: ' + errors.join(', '));
 }
 
 // ── LOAD LOG PENGELUARAN BAHAN ──
