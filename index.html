@@ -3758,9 +3758,6 @@ async function exportSisaStok(format) {
   } catch(e) { showToast('⚠ Gagal export: ' + e.message); }
 }
 
-// Init: cek session saat halaman dibuka
-applySession();
-
 // ── MOBILE SIDEBAR ──
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
@@ -3787,6 +3784,9 @@ const pages = {
   'laporan-keuangan': { title: 'Laporan Keuangan', sub: 'Arus kas, laba rugi, dan rekap per kategori' },
   'manajemen-user': { title: 'Manajemen User', sub: 'Kelola akun dan hak akses pengguna' },
 };
+
+// Init: cek session saat halaman dibuka
+applySession();
 
 function showPage(id) {
   // Cek hak akses
