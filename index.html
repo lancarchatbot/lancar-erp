@@ -4698,7 +4698,7 @@ function downloadImportTemplate() {
   showToast('✅ Template diunduh');
 }
 
-document.getElementById('import-modal').addEventListener('click', function(e) { if(e.target===this) closeImport(); });
+document.getElementById('import-modal')?.addEventListener('click', function(e) { if(e.target===this) closeImport(); });
 
 // Init: dashboard charts dibuat di loadDashboard() saat halaman dibuka
 </script>
