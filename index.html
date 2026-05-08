@@ -3751,17 +3751,15 @@ function showPage(id) {
   document.getElementById('topbar-sub').textContent = info.sub || '';
   localStorage.setItem('lancar_last_page', id);
   closeSidebar();
-  setTimeout(() => {
-    if (id === 'manajemen-user') loadUsers();
-    if (id === 'master-bahan') loadBahan();
-    if (id === 'log-penerimaan') loadPenerimaan();
-    if (id === 'log-pengeluaran') loadKeluar();
-    if (id === 'log-produksi') loadProduksi();
-    if (id === 'log-penjualan') loadPenjualan();
-    if (id === 'pengeluaran-umum') loadPengeluaranUmum();
-    if (id === 'resep-bom') loadBOM();
-    initCharts(id);
-  }, 0);
+  if (id === 'manajemen-user') loadUsers();
+  if (id === 'master-bahan') loadBahan();
+  if (id === 'log-penerimaan') loadPenerimaan();
+  if (id === 'log-pengeluaran') loadKeluar();
+  if (id === 'log-produksi') loadProduksi();
+  if (id === 'log-penjualan') loadPenjualan();
+  if (id === 'pengeluaran-umum') loadPengeluaranUmum();
+  if (id === 'resep-bom') loadBOM();
+  initCharts(id);
 }
 
 // ── CHARTS ──
