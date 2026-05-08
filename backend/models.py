@@ -130,6 +130,18 @@ class KategoriKustom(Base):
     kode  = Column(String(20), unique=True, nullable=False)
     nama  = Column(String(200), nullable=False)
 
+class ResepBOM(Base):
+    __tablename__ = "resep_bom"
+    id             = Column(Integer, primary_key=True, index=True)
+    produk_kode    = Column(String(20), nullable=False, index=True)
+    produk_nama    = Column(String(200))
+    bahan_kode     = Column(String(20))
+    bahan_nama     = Column(String(200))
+    jumlah_per_pcs = Column(Float, default=0)
+    satuan         = Column(String(20))
+    catatan        = Column(Text)
+    created_at     = Column(DateTime(timezone=True), server_default=func.now())
+
 class MasterProduk(Base):
     __tablename__ = "master_produk"
     id           = Column(Integer, primary_key=True, index=True)

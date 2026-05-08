@@ -1685,37 +1685,37 @@
           <h1>📋 Resep / Bill of Materials (BOM)</h1>
           <p>Komposisi bahan per pcs untuk setiap SKU produk</p>
         </div>
-        <button class="btn btn-primary">+ Tambah Resep</button>
+        <button class="btn btn-primary" onclick="openBomModal()">+ Tambah Bahan BOM</button>
       </div>
 
-      <div class="tabs">
-        <div class="tab active">LCR-20 · Box 20 sachet</div>
-        <div class="tab">LCR-10 · Box 10 sachet</div>
+      <div class="tabs" id="bom-tabs" style="margin-bottom:16px">
+        <div class="tab active" onclick="switchBomSku(this,'')">Semua SKU</div>
       </div>
 
       <div class="two-col">
         <div class="card">
           <div class="card-header">
-            <span class="card-title">🍵 LCR-20 · Lancar Teh Herbal Box 20</span>
-            <span class="badge badge-green">HPP Bahan: Rp 15.850/pcs</span>
+            <span class="card-title" id="bom-card-title">📋 Semua Resep</span>
+            <span class="badge badge-green" id="bom-hpp-badge"></span>
+          </div>
+          <div class="hapus-bar" id="bom-hapus-bar">
+            <span id="bom-hapus-count">0</span> item dipilih
+            <button class="btn btn-danger" style="font-size:12px;padding:4px 12px" onclick="hapusPilihan('bom','/api/resep-bom',loadBOM)">🗑 Hapus yang dipilih</button>
+            <button class="btn btn-secondary" style="font-size:12px;padding:4px 12px" onclick="clearPilihan('bom')">Batal</button>
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Kode</th><th>Nama Bahan</th><th style="text-align:right">Jml/Pcs</th><th>Satuan</th><th style="text-align:right">Harga/Sat</th><th style="text-align:right">Subtotal</th><th>Catatan</th></tr></thead>
-              <tbody>
-                <tr><td class="td-mono">JHE</td><td>Jahe</td><td style="text-align:right">40</td><td>gram</td><td style="text-align:right">Rp 50</td><td style="text-align:right;font-weight:700">Rp 2.000</td><td style="font-size:12px;color:var(--gray-400)">Jahe rajangan</td></tr>
-                <tr><td class="td-mono">KYT</td><td>Kunyit</td><td style="text-align:right">40</td><td>gram</td><td style="text-align:right">Rp 60</td><td style="text-align:right;font-weight:700">Rp 2.400</td><td style="font-size:12px;color:var(--gray-400)">Kunyit rajangan</td></tr>
-                <tr><td class="td-mono">KMN</td><td>Kayu Manis</td><td style="text-align:right">20</td><td>gram</td><td style="text-align:right">Rp 100</td><td style="text-align:right;font-weight:700">Rp 2.000</td><td style="font-size:12px;color:var(--gray-400)">Kayu manis rajangan</td></tr>
-                <tr><td class="td-mono">KTM</td><td>Ketumbar</td><td style="text-align:right">40</td><td>gram</td><td style="text-align:right">Rp 80</td><td style="text-align:right;font-weight:700">Rp 3.200</td><td style="font-size:12px;color:var(--gray-400)">Biji ketumbar</td></tr>
-                <tr><td class="td-mono">KLD</td><td>Kulit Delima</td><td style="text-align:right">20</td><td>gram</td><td style="text-align:right">Rp 150</td><td style="text-align:right;font-weight:700">Rp 3.000</td><td style="font-size:12px;color:var(--gray-400)">Kulit delima rajangan</td></tr>
-                <tr><td class="td-mono">KTG</td><td>Kantung Teh</td><td style="text-align:right">20</td><td>pcs</td><td style="text-align:right">Rp 50</td><td style="text-align:right;font-weight:700">Rp 1.000</td><td style="font-size:12px;color:var(--gray-400)">20 sachet per box</td></tr>
-                <tr><td class="td-mono">BOX-30</td><td>Box Kemasan 30s</td><td style="text-align:right">1</td><td>pcs</td><td style="text-align:right">Rp 2.000</td><td style="text-align:right;font-weight:700">Rp 2.000</td><td style="font-size:12px;color:var(--gray-400)">Box kemasan luar</td></tr>
-                <tr><td class="td-mono">LBL</td><td>Label / Stiker</td><td style="text-align:right">1</td><td>pcs</td><td style="text-align:right">Rp 250</td><td style="text-align:right;font-weight:700">Rp 250</td><td style="font-size:12px;color:var(--gray-400)">Label produk</td></tr>
-                <tr style="background:var(--green-light)">
-                  <td colspan="5" style="font-weight:700;text-align:right">Total HPP Bahan</td>
-                  <td style="text-align:right;font-weight:800;color:var(--green-dark);font-size:15px">Rp 15.850</td>
-                  <td></td>
+              <thead>
+                <tr>
+                  <th style="width:32px"><input type="checkbox" id="chk-all-bom" onchange="toggleAll('bom')"></th>
+                  <th>SKU</th><th>Kode</th><th>Nama Bahan</th>
+                  <th style="text-align:right">Jml/Pcs</th><th>Satuan</th>
+                  <th style="text-align:right">Harga/Sat</th><th style="text-align:right">Subtotal</th>
+                  <th>Catatan</th><th>Aksi</th>
                 </tr>
+              </thead>
+              <tbody id="bom-tbody">
+                <tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat data...</td></tr>
               </tbody>
             </table>
           </div>
@@ -1730,6 +1730,54 @@
               <canvas id="chartBOM"></canvas>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL BOM -->
+    <div class="modal-backdrop" id="bom-modal">
+      <div class="modal" style="max-width:480px">
+        <div class="modal-header">
+          <h3 id="bom-modal-title">+ Tambah Bahan BOM</h3>
+          <button class="modal-close" onclick="closeBomModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="bom-edit-id">
+          <div class="form-group">
+            <label>SKU Produk *</label>
+            <select id="bom-produk-kode" onchange="updateBomProdukNama(this)">
+              <option value="">— Pilih Produk —</option>
+            </select>
+          </div>
+          <div class="form-grid" style="grid-template-columns:1fr 1fr">
+            <div class="form-group">
+              <label>Kode Bahan</label>
+              <input type="text" id="bom-bahan-kode" placeholder="JHE" oninput="autofillBomBahan(this.value)">
+            </div>
+            <div class="form-group">
+              <label>Nama Bahan</label>
+              <input type="text" id="bom-bahan-nama" placeholder="Jahe">
+            </div>
+          </div>
+          <div class="form-grid" style="grid-template-columns:1fr 1fr">
+            <div class="form-group">
+              <label>Jumlah per Pcs *</label>
+              <input type="number" id="bom-jumlah" placeholder="40" step="any" min="0">
+            </div>
+            <div class="form-group">
+              <label>Satuan</label>
+              <input type="text" id="bom-satuan" placeholder="gram">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Catatan</label>
+            <input type="text" id="bom-catatan" placeholder="(opsional)">
+          </div>
+          <div id="bom-error" style="color:var(--red);font-size:13px;display:none"></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeBomModal()">Batal</button>
+          <button class="btn btn-primary" onclick="saveBOM()">💾 Simpan</button>
         </div>
       </div>
     </div>
@@ -1845,7 +1893,38 @@
           <h1>⚖️ Kalkulator Sisa Stok Gudang</h1>
           <p>Cross-check: Total Penerimaan vs Pemakaian Teoretis (Log Produksi × Resep BOM)</p>
         </div>
-        <button class="btn btn-secondary">⬇ Export Laporan</button>
+        <button class="btn btn-secondary" onclick="toggleSisaExportBar()">⬇ Export Laporan</button>
+      </div>
+
+      <!-- EXPORT FILTER BAR -->
+      <div id="sisa-export-bar" style="display:none;margin-bottom:16px">
+        <div class="dl-bar" style="flex-wrap:wrap;gap:8px;align-items:center">
+          <label style="font-weight:600;color:var(--green-dark)">📅 Filter Periode Export:</label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:12px;color:#1e40af">Dari</span>
+            <input type="date" id="sisa-dari" style="font-size:12px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px">
+            <span style="font-size:12px;color:#1e40af">s/d</span>
+            <input type="date" id="sisa-sampai" style="font-size:12px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px">
+          </div>
+          <span style="font-size:12px;color:var(--gray-400)">atau pilih:</span>
+          <select id="sisa-bulan" style="font-size:12px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px;min-width:120px" onchange="syncSisaFilter('bulan')">
+            <option value="">Semua Bulan</option>
+            <option value="1">Januari</option><option value="2">Februari</option>
+            <option value="3">Maret</option><option value="4">April</option>
+            <option value="5">Mei</option><option value="6">Juni</option>
+            <option value="7">Juli</option><option value="8">Agustus</option>
+            <option value="9">September</option><option value="10">Oktober</option>
+            <option value="11">November</option><option value="12">Desember</option>
+          </select>
+          <select id="sisa-tahun" style="font-size:12px;padding:4px 8px;border:1px solid #d1d5db;border-radius:6px;min-width:90px" onchange="syncSisaFilter('tahun')">
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+          </select>
+          <button class="btn btn-download" onclick="exportSisaStok()">⬇ Download Excel</button>
+          <button class="btn btn-secondary" style="font-size:12px;padding:5px 12px" onclick="exportSisaStok('pdf')">⬇ PDF</button>
+          <button class="btn btn-secondary" style="font-size:12px;padding:5px 12px;color:var(--gray-400)" onclick="toggleSisaExportBar()">✕ Tutup</button>
+        </div>
       </div>
 
       <div class="kpi-grid" style="margin-bottom:20px">
@@ -3086,6 +3165,257 @@ async function loadPengeluaranUmum() {
   } catch(e) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
 }
 
+// ── RESEP BOM ──
+let _bomAllData = [];
+let _bomCurrentSku = '';
+
+async function loadBOM() {
+  const token = localStorage.getItem('lancar_token');
+  const tbody = document.getElementById('bom-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat...</td></tr>';
+  try {
+    const res = await fetch(API + '/api/resep-bom', { headers: { 'Authorization': 'Bearer ' + token } });
+    _bomAllData = await res.json();
+    // Bangun tabs dari SKU unik
+    const skus = [...new Set(_bomAllData.map(r => r.produk_kode))];
+    const tabsEl = document.getElementById('bom-tabs');
+    tabsEl.innerHTML = '<div class="tab' + (_bomCurrentSku===''?' active':'') + '" onclick="switchBomSku(this,\'\')">Semua SKU</div>' +
+      skus.map(s => {
+        const nama = _bomAllData.find(r=>r.produk_kode===s)?.produk_nama || s;
+        return `<div class="tab${_bomCurrentSku===s?' active':''}" onclick="switchBomSku(this,'${s}')">${s} · ${nama}</div>`;
+      }).join('');
+    renderBomTable();
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+}
+
+function renderBomTable() {
+  const tbody = document.getElementById('bom-tbody');
+  if (!tbody) return;
+  const rows = _bomCurrentSku ? _bomAllData.filter(r => r.produk_kode === _bomCurrentSku) : _bomAllData;
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data BOM. Klik "+ Tambah Bahan BOM" untuk mulai.</td></tr>';
+    document.getElementById('bom-hpp-badge').textContent = '';
+    document.getElementById('bom-card-title').textContent = _bomCurrentSku ? `🍵 ${_bomCurrentSku}` : '📋 Semua Resep';
+    return;
+  }
+  const totalHpp = rows.reduce((s, r) => s + (r.subtotal||0), 0);
+  document.getElementById('bom-hpp-badge').textContent = _bomCurrentSku ? `HPP Bahan: Rp ${totalHpp.toLocaleString('id')}/pcs` : '';
+  const sku = _bomCurrentSku || '';
+  const nama = sku ? (rows[0]?.produk_nama || sku) : 'Semua Resep';
+  document.getElementById('bom-card-title').textContent = `🍵 ${sku ? sku + ' · ' + nama : nama}`;
+  tbody.innerHTML = rows.map(r => `<tr>
+    <td><input type="checkbox" class="row-chk" value="${r.id}" onchange="updateDeleteBtn('bom')"></td>
+    <td class="td-mono" style="font-size:11px">${r.produk_kode}</td>
+    <td class="td-mono">${r.bahan_kode||'—'}</td>
+    <td><strong>${r.bahan_nama||'—'}</strong></td>
+    <td style="text-align:right">${(r.jumlah_per_pcs||0).toLocaleString('id')}</td>
+    <td>${r.satuan||'—'}</td>
+    <td style="text-align:right">Rp ${(r.harga_satuan||0).toLocaleString('id')}</td>
+    <td style="text-align:right;font-weight:700;color:var(--green-dark)">Rp ${(r.subtotal||0).toLocaleString('id')}</td>
+    <td style="font-size:12px;color:var(--gray-400)">${r.catatan||'—'}</td>
+    <td style="white-space:nowrap">
+      <button class="btn btn-secondary" style="padding:3px 8px;font-size:11px;margin-right:3px" onclick="openBomModal(${r.id})">✏ Edit</button>
+      <button class="btn btn-danger" style="padding:3px 8px;font-size:11px" onclick="hapusSatu('/api/resep-bom',${r.id},loadBOM)">🗑</button>
+    </td>
+  </tr>`).join('');
+}
+
+function switchBomSku(el, sku) {
+  document.querySelectorAll('#bom-tabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  _bomCurrentSku = sku;
+  renderBomTable();
+}
+
+async function openBomModal(id) {
+  const token = localStorage.getItem('lancar_token');
+  // Isi dropdown produk
+  const produkRes = await fetch(API + '/api/produk', { headers: { 'Authorization': 'Bearer ' + token } });
+  const produks = await produkRes.json();
+  const sel = document.getElementById('bom-produk-kode');
+  sel.innerHTML = '<option value="">— Pilih Produk —</option>' +
+    produks.map(p => `<option value="${p.kode}" data-nama="${p.nama}">${p.kode} · ${p.nama}</option>`).join('');
+
+  document.getElementById('bom-edit-id').value = '';
+  document.getElementById('bom-modal-title').textContent = '+ Tambah Bahan BOM';
+  document.getElementById('bom-produk-kode').value = _bomCurrentSku || '';
+  document.getElementById('bom-bahan-kode').value = '';
+  document.getElementById('bom-bahan-nama').value = '';
+  document.getElementById('bom-jumlah').value = '';
+  document.getElementById('bom-satuan').value = '';
+  document.getElementById('bom-catatan').value = '';
+  document.getElementById('bom-error').style.display = 'none';
+
+  if (id) {
+    const row = _bomAllData.find(r => r.id === id);
+    if (row) {
+      document.getElementById('bom-modal-title').textContent = '✏ Edit Bahan BOM';
+      document.getElementById('bom-edit-id').value = row.id;
+      document.getElementById('bom-produk-kode').value = row.produk_kode;
+      document.getElementById('bom-bahan-kode').value = row.bahan_kode || '';
+      document.getElementById('bom-bahan-nama').value = row.bahan_nama || '';
+      document.getElementById('bom-jumlah').value = row.jumlah_per_pcs || '';
+      document.getElementById('bom-satuan').value = row.satuan || '';
+      document.getElementById('bom-catatan').value = row.catatan || '';
+    }
+  }
+  document.getElementById('bom-modal').classList.add('open');
+}
+
+function closeBomModal() {
+  document.getElementById('bom-modal').classList.remove('open');
+}
+
+async function autofillBomBahan(kode) {
+  if (!kode || kode.length < 2) return;
+  const token = localStorage.getItem('lancar_token');
+  try {
+    const res = await fetch(API + '/api/bahan/' + kode, { headers: { 'Authorization': 'Bearer ' + token } });
+    if (res.ok) {
+      const b = await res.json();
+      document.getElementById('bom-bahan-nama').value = b.nama || '';
+      document.getElementById('bom-satuan').value = document.getElementById('bom-satuan').value || b.satuan || '';
+    }
+  } catch(e) {}
+}
+
+function updateBomProdukNama(sel) {
+  const opt = sel.options[sel.selectedIndex];
+}
+
+async function saveBOM() {
+  const id = document.getElementById('bom-edit-id').value;
+  const errEl = document.getElementById('bom-error');
+  errEl.style.display = 'none';
+  const produk_kode = document.getElementById('bom-produk-kode').value;
+  const jumlah = parseFloat(document.getElementById('bom-jumlah').value);
+  if (!produk_kode) { errEl.textContent = 'SKU Produk wajib dipilih'; errEl.style.display = 'block'; return; }
+  if (!jumlah || jumlah <= 0) { errEl.textContent = 'Jumlah per Pcs wajib diisi'; errEl.style.display = 'block'; return; }
+
+  const token = localStorage.getItem('lancar_token');
+  const sel = document.getElementById('bom-produk-kode');
+  const opt = sel.options[sel.selectedIndex];
+  const payload = {
+    produk_kode,
+    produk_nama: opt.dataset.nama || produk_kode,
+    bahan_kode: document.getElementById('bom-bahan-kode').value || null,
+    bahan_nama: document.getElementById('bom-bahan-nama').value || null,
+    jumlah_per_pcs: jumlah,
+    satuan: document.getElementById('bom-satuan').value || null,
+    catatan: document.getElementById('bom-catatan').value || null,
+  };
+  try {
+    const url = id ? API + '/api/resep-bom/' + id : API + '/api/resep-bom';
+    const method = id ? 'PUT' : 'POST';
+    const res = await fetch(url, { method, headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    if (!res.ok) throw new Error('Gagal menyimpan');
+    closeBomModal();
+    loadBOM();
+    showToast(id ? '✅ Bahan BOM diperbarui' : '✅ Bahan BOM ditambahkan');
+  } catch(e) { errEl.textContent = e.message; errEl.style.display = 'block'; }
+}
+
+document.getElementById('bom-modal').addEventListener('click', function(e) { if(e.target===this) closeBomModal(); });
+
+// ── SISA STOK EXPORT ──
+function toggleSisaExportBar() {
+  const bar = document.getElementById('sisa-export-bar');
+  const isVisible = bar.style.display !== 'none';
+  bar.style.display = isVisible ? 'none' : 'block';
+  if (!isVisible) {
+    // Set default: bulan & tahun sekarang
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth() + 1;
+    const pad = n => String(n).padStart(2,'0');
+    document.getElementById('sisa-bulan').value = m;
+    document.getElementById('sisa-tahun').value = y;
+    document.getElementById('sisa-dari').value = `${y}-${pad(m)}-01`;
+    const lastDay = new Date(y, m, 0).getDate();
+    document.getElementById('sisa-sampai').value = `${y}-${pad(m)}-${pad(lastDay)}`;
+  }
+}
+
+function syncSisaFilter(trigger) {
+  const bulan = document.getElementById('sisa-bulan').value;
+  const tahun = document.getElementById('sisa-tahun').value;
+  if (bulan && tahun) {
+    const pad = n => String(n).padStart(2,'0');
+    const y = parseInt(tahun), m = parseInt(bulan);
+    document.getElementById('sisa-dari').value = `${y}-${pad(m)}-01`;
+    const lastDay = new Date(y, m, 0).getDate();
+    document.getElementById('sisa-sampai').value = `${y}-${pad(m)}-${pad(lastDay)}`;
+  }
+}
+
+async function exportSisaStok(format) {
+  const dari = document.getElementById('sisa-dari').value;
+  const sampai = document.getElementById('sisa-sampai').value;
+  const bulan = document.getElementById('sisa-bulan').value;
+  const tahun = document.getElementById('sisa-tahun').value;
+  if (!dari && !sampai && !bulan) { showToast('⚠ Pilih periode terlebih dahulu'); return; }
+
+  const token = localStorage.getItem('lancar_token');
+  showToast('⏳ Memuat data untuk export...');
+
+  try {
+    const [resPenerimaan, resProduksi, resBahan] = await Promise.all([
+      fetch(API + '/api/penerimaan', { headers: { 'Authorization': 'Bearer ' + token } }),
+      fetch(API + '/api/produksi',   { headers: { 'Authorization': 'Bearer ' + token } }),
+      fetch(API + '/api/bahan',      { headers: { 'Authorization': 'Bearer ' + token } }),
+    ]);
+    let penerimaan = await resPenerimaan.json();
+    let produksi   = await resProduksi.json();
+    const bahan    = await resBahan.json();
+
+    // Filter berdasarkan tanggal
+    if (dari)   penerimaan = penerimaan.filter(r => r.tanggal >= dari);
+    if (sampai) penerimaan = penerimaan.filter(r => r.tanggal <= sampai);
+    if (dari)   produksi   = produksi.filter(r => r.tanggal >= dari);
+    if (sampai) produksi   = produksi.filter(r => r.tanggal <= sampai);
+
+    // Hitung total penerimaan per bahan
+    const totalTerima = {};
+    penerimaan.forEach(p => {
+      if (p.bahan_kode) totalTerima[p.bahan_kode] = (totalTerima[p.bahan_kode] || 0) + (p.jumlah || 0);
+    });
+
+    // Label periode
+    let periodeLabel = '';
+    if (bulan && tahun) {
+      const namaBulan = ['','Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+      periodeLabel = `${namaBulan[parseInt(bulan)]} ${tahun}`;
+    } else if (dari && sampai) {
+      periodeLabel = `${dari} s/d ${sampai}`;
+    }
+
+    // Buat baris CSV
+    const rows = [
+      ['Laporan Sisa Stok Gudang — ' + periodeLabel],
+      [''],
+      ['Kode','Nama Bahan','Satuan','Total Terima','Stok Aktual','Stok Min','Status','Nilai Stok (Rp)'],
+    ];
+    bahan.forEach(b => {
+      const terima = totalTerima[b.kode] || 0;
+      const stok = b.stok || 0;
+      const status = stok < 0 ? 'MINUS' : stok <= b.stok_min ? 'PESAN ULANG' : 'AMAN';
+      const nilai = stok * (b.harga_satuan || 0);
+      rows.push([b.kode, b.nama, b.satuan||'', terima, stok, b.stok_min||0, status, nilai]);
+    });
+
+    // Download sebagai CSV
+    const csvContent = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+    const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `sisa-stok-${periodeLabel.replace(/\s/g,'-') || dari + '_' + sampai}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('✅ Laporan berhasil diunduh');
+  } catch(e) { showToast('⚠ Gagal export: ' + e.message); }
+}
+
 // Init: cek session saat halaman dibuka
 applySession();
 
@@ -3146,6 +3476,7 @@ function showPage(id) {
     if (id === 'log-produksi') loadProduksi();
     if (id === 'log-penjualan') loadPenjualan();
     if (id === 'pengeluaran-umum') loadPengeluaranUmum();
+    if (id === 'resep-bom') loadBOM();
     initCharts(id);
   }, 0);
 }
