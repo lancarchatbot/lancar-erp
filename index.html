@@ -946,6 +946,7 @@
           <p>Pencatatan bahan masuk sesuai standar audit <span class="bpom-badge">BPOM</span> <span class="bpom-badge">CPOTB</span></p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-download" onclick="downloadTemplate('penerimaan')">⬇ Template CSV</button>
           <button class="btn btn-secondary" onclick="openImport('penerimaan')">📥 Import CSV</button>
           <button class="btn btn-primary">+ Tambah Entri Penerimaan</button>
         </div>
@@ -2064,6 +2065,7 @@
           <p>Pencatatan penjualan per channel — Shopee, TikTok, WhatsApp, Offline</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-download" onclick="downloadTemplate('penjualan')">⬇ Template CSV</button>
           <button class="btn btn-secondary" onclick="openImport('penjualan')">📥 Import CSV</button>
           <button class="btn btn-secondary" onclick="openJualModal()">+ Tambah Penjualan</button>
         </div>
@@ -2154,6 +2156,7 @@
           <p>Semua biaya operasional di luar pembelian bahan baku — peralatan, legal, gaji, iklan, dll</p>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-download" onclick="downloadTemplate('pengeluaran')">⬇ Template CSV</button>
           <button class="btn btn-secondary" onclick="openImport('pengeluaran')">📥 Import CSV</button>
           <button class="btn btn-primary" onclick="openKeluarModal()">+ Tambah Pengeluaran</button>
         </div>
@@ -4343,6 +4346,11 @@ async function submitImport() {
   } finally {
     btn.disabled = false; btn.textContent = '📥 Import';
   }
+}
+
+function downloadTemplate(type) {
+  _importType = type;
+  downloadImportTemplate();
 }
 
 function downloadImportTemplate() {
