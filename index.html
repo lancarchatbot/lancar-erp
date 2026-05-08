@@ -927,7 +927,7 @@
                 <th>Kode</th><th>Nama Bahan</th><th>Satuan</th>
                 <th style="text-align:right">Stok</th><th style="text-align:right">Stok Min</th>
                 <th style="text-align:right">Harga/Sat</th><th style="text-align:right">Nilai Stok</th>
-                <th>Status</th><th>Hapus</th>
+                <th>Status</th><th>Edit</th><th>Hapus</th>
               </tr>
             </thead>
             <tbody id="bahan-tbody">
@@ -3065,15 +3065,18 @@ async function hapusSatu(apiPath, id, reloadFn) {
 }
 
 // ── LOAD MASTER BAHAN ──
+const _bahanCache = {};
 async function loadBahan() {
   const token = localStorage.getItem('lancar_token');
   const tbody = document.getElementById('bahan-tbody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400)">Memuat...</td></tr>';
   try {
     const res = await fetch(API + '/api/bahan', { headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data ('+res.status+')</td></tr>'; return; }
     const data = await res.json();
-    if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data</td></tr>'; return; }
+    if (!data.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400)">Belum ada data</td></tr>'; return; }
+    data.forEach(b => { _bahanCache[b.id] = b; });
     tbody.innerHTML = data.map(b => {
       const nilai = (b.stok * b.harga_satuan);
       const stokClass = b.stok < 0 ? 'color:var(--red)' : b.stok === 0 ? 'color:var(--gold)' : '';
@@ -3088,10 +3091,11 @@ async function loadBahan() {
         <td style="text-align:right">Rp ${b.harga_satuan.toLocaleString('id')}</td>
         <td style="text-align:right;font-weight:600;${stokClass}">Rp ${nilai.toLocaleString('id')}</td>
         <td>${badge}</td>
+        <td><button class="btn btn-secondary" style="padding:4px 8px;font-size:11px" onclick="openBahanModal(${b.id},_bahanCache[${b.id}])">✏</button></td>
         <td><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="hapusSatu('/api/bahan',${b.id},loadBahan)">🗑</button></td>
       </tr>`;
     }).join('');
-  } catch(e) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:20px;color:var(--gray-400)">Gagal memuat data</td></tr>'; }
 }
 
 // ── LOAD LOG PENERIMAAN ──
@@ -3121,10 +3125,20 @@ async function loadPenerimaan() {
 }
 
 // ── MASTER BAHAN MODAL ──
-function openBahanModal(id) {
+function openBahanModal(id, data) {
   ['bahan-kode','bahan-nama','bahan-satuan','bahan-harga','bahan-stok','bahan-stok-min','bahan-kategori','bahan-keterangan'].forEach(i => { const el=document.getElementById(i); if(el) el.value=''; });
   document.getElementById('bahan-edit-id').value = id || '';
   document.getElementById('bahan-modal-title').textContent = id ? '✏ Edit Bahan' : '+ Tambah Bahan';
+  if (id && data) {
+    document.getElementById('bahan-kode').value = data.kode || '';
+    document.getElementById('bahan-nama').value = data.nama || '';
+    document.getElementById('bahan-satuan').value = data.satuan || '';
+    document.getElementById('bahan-harga').value = data.harga_satuan || 0;
+    document.getElementById('bahan-stok').value = data.stok || 0;
+    document.getElementById('bahan-stok-min').value = data.stok_min || 0;
+    document.getElementById('bahan-kategori').value = data.kategori || '';
+    document.getElementById('bahan-keterangan').value = data.keterangan || '';
+  }
   document.getElementById('bahan-modal').classList.add('open');
 }
 function closeBahanModal() { document.getElementById('bahan-modal').classList.remove('open'); }
