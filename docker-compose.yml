@@ -41,4 +41,8 @@ services:
 
 volumes:
   pgdata:
+    external: true
+    name: lancar-herbal_pgdata
   uploads:
+    external: true
+    name: lancar-herbal_uploads
